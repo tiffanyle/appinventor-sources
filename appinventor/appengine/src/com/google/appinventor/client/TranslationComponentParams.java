@@ -197,6 +197,17 @@ public class TranslationComponentParams {
     map.put("yAngularVelocity", MESSAGES.yAngularVelocityParams());
     map.put("zAngularVelocity", MESSAGES.zAngularVelocityParams());
     map.put("timestamp", MESSAGES.timestampParams());
+    map.put("colorCode", MESSAGES.colorCodeParams());
+    map.put("colorName", MESSAGES.colorNameParams());
+    map.put("fill", MESSAGES.fillParams());
+    map.put("filename", MESSAGES.filenameParams());
+    map.put("height", MESSAGES.heightParams());
+    map.put("no", MESSAGES.noParams());
+    map.put("sensorValue", MESSAGES.sensorValueParams());
+    map.put("tachoCount", MESSAGES.tachoCountParams());
+    map.put("tachoCounts", MESSAGES.tachoCountsParams());
+    map.put("useBrake", MESSAGES.useBrakeParams());
+    map.put("width", MESSAGES.widthParams());
     return map;
   }
 }
