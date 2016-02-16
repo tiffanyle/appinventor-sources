@@ -534,7 +534,7 @@ public class YaVersion {
   // For BLUETOOTHSERVER_COMPONENT_VERSION 5:
   // - The BluetoothServer.Secure property was added.
   public static final int BLUETOOTHSERVER_COMPONENT_VERSION = 5;
-
+  public static final int BLE_COMPONENT_VERSION = 1;
   // For BUTTON_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
   // For BUTTON_COMPONENT_VERSION 3:
