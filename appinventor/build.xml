@@ -136,6 +136,9 @@
         <!-- gwt libs -->
         <pathelement location="lib/gwt/2.7/gwt-dev.jar"/>
         <pathelement location="lib/gwt/2.7/gwt-user.jar"/>
+        <!-- javassist lib -->
+        <pathelement location="lib/powermock/javassist-3.18.0-GA.jar"/>
+       
         <!-- app engine libs -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/user/appengine-api-1.0-sdk-1.9.17.jar"/>
         <pathelement location="lib/gcs/appengine-gcs-client-0.4.3.jar"/>

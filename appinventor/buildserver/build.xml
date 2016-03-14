@@ -84,6 +84,7 @@
     <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${classes.files.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/4.3/android.jar" />
+    <copy toFile="${classes.files.dir}/javassist.jar" file="${lib.dir}/powermock/javassist-3.18.0-GA.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />

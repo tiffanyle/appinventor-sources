@@ -250,49 +250,6 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
   }
 
   
-  @SimpleFunction(description="Write Alert Level to a connected BLE device with Alert Level Service. Alert Level can be 0, 1 and 2."
-      + " 0 for no alert; 1 for mid alert; 2 for high alert.")
-  public void WriteFindMe(int findMe_value) {
-    if (findMe_value <= 2 && findMe_value >= 0) {
-      writeChar(BLEList.FINDME_SER, BLEList.FINDME_CHAR, findMe_value, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-    }
-  }
-
-  
-  @SimpleFunction(description="Set Link Loss value to a connected BLE device with Link Loss Service. Link Loss value can be 0, 1 and 2."
-      + " 0 for no alert; 1 for mid alert; 2 for high alert.")
-  public void SetLinkLoss(int value) {
-    if (value <= 2 && value >= 0) {
-      linkLoss_value = value;
-      writeChar(BLEList.LINKLOSS_SER, BLEList.LINKLOSS_CHAR, value, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-    }
-  }
-  
-
-  @SimpleFunction(description="Read Battery level from a connected BLE device with Battery Service.")
-  public void ReadBattery() {
-    readChar(BLEList.BATTERY_LEVEL_SER, BLEList.BATTERY_LEVEL_CHAR);
-  }
-
-  
-  @SimpleFunction(description="Read Temperature from a connected BLE device with Health Thermometer Service.")
-  public void ReadTemperature() {
-    readChar(BLEList.THERMOMETER_SER, BLEList.THERMOMETER_CHAR);
-  }
-
-  
-  @SimpleFunction(description="Read Heart Rate from a connected BLE device with Heart Rate Service.")
-  public void ReadHeartRate() {
-    readChar(BLEList.HEART_RATE_SER, BLEList.HEART_RATE_MEASURE_CHAR);
-  }
-
-  
-  @SimpleFunction(description="Read Tx power from a connected BLE device with Tx Power Service.")
-  public void ReadTxPower() {
-    readChar(BLEList.TXPOWER_SER, BLEList.TXPOWER_CHAR);
-  }
-
-  
   @SimpleFunction(description="Get the Rssi of found device by index. Index specifies the position of DeviceList.")
   public int FoundDeviceRssi(int index) {
     if (index <= mLeDevices.size())
@@ -326,7 +283,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
   }
 
   
-  @SimpleProperty(description="Return the battery level.", category = PropertyCategory.BEHAVIOR)
+  //@SimpleProperty(description="Return the battery level.", category = PropertyCategory.BEHAVIOR)
   public String BatteryValue() {
     if (isCharRead) {
       return Integer.toString(battery);
@@ -336,7 +293,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
   }
 
   
-  @SimpleProperty(description="Return the temperature.", category = PropertyCategory.BEHAVIOR)
+  //@SimpleProperty(description="Return the temperature.", category = PropertyCategory.BEHAVIOR)
   public String TemperatureValue() {
     if (isCharRead) {
       if ((int) bodyTemp[0] == 0) {
@@ -354,7 +311,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
   }
 
   
-  @SimpleProperty(description="Return the heart rate.", category = PropertyCategory.BEHAVIOR)
+  //@SimpleProperty(description="Return the heart rate.", category = PropertyCategory.BEHAVIOR)
   public String HeartRateValue() {
     if (isCharRead) {
       int mTemp = 0;
@@ -372,13 +329,13 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
   }
 
   
-  @SimpleProperty(description="Return the Tx power.", category = PropertyCategory.BEHAVIOR)
+  //@SimpleProperty(description="Return the Tx power.", category = PropertyCategory.BEHAVIOR)
   public int TxPower() {
     return txPower;
   }
 
   
-  @SimpleProperty(description="Return the link loss value.", category = PropertyCategory.BEHAVIOR)
+  //@SimpleProperty(description="Return the link loss value.", category = PropertyCategory.BEHAVIOR)
   public String LinkLossValue() {
     if (linkLoss_value == 0) {
       return "No Alert";
@@ -505,7 +462,13 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
       }
     });
   }
+  
+  @SimpleFunction(description="Get Supported GATT Services")
+  public List<BluetoothGattService> getSupportedGattServices() {
+    if (mGattService == null) return null;
 
+    return mGattService;
+}
   
   /**
    * Functions
@@ -667,19 +630,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
       
       if (status == BluetoothGatt.GATT_SUCCESS) {
-        if (characteristic.getUuid().equals(BLEList.BATTERY_LEVEL_CHAR)) {
-          battery = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-          isCharRead = true;
-          ValueRead("", battery, 0,"");
-        } else if (characteristic.getUuid().equals(BLEList.TXPOWER_CHAR)) {
-          txPower = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-          isCharRead = true;
-          ValueRead("", txPower, 0, "");
-        } else if (characteristic.getUuid().equals(BLEList.LINKLOSS_CHAR)) {
-          linkLoss_value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-          isCharRead = true;
-          ValueRead("", linkLoss_value, 0, "");
-        } else {
+
           data = characteristic.getValue();
           intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, intOffset);
           stringValue = characteristic.getStringValue(strOffset);
@@ -690,7 +641,6 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
           }
           isCharRead = true;
           ValueRead(byteValue, intValue, floatValue, stringValue);
-        }
       }
     }
 
@@ -698,52 +648,17 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
     // Result of a characteristic read operation is changed
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
       
-      if (characteristic.getUuid().equals(BLEList.BATTERY_LEVEL_CHAR)) {
-        battery = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-        isCharRead = true;
-        ValueChanged("",battery, 0, "");
-      } else if (characteristic.getUuid().equals(BLEList.THERMOMETER_CHAR)) {
-        bodyTemp = characteristic.getValue();
-        isCharRead = true;
-        if ((int) bodyTemp[0] == 0) {
-          tempUnit = "Celsius";
-        } else {
-          tempUnit = "Fahrenheit";
-        }
-        float mTemp = ((bodyTemp[2] & 0xff) << 8) + (bodyTemp[1] & 0xff);
-        ValueChanged("", 0, 0, mTemp + tempUnit);
-      } else if (characteristic.getUuid().equals(BLEList.HEART_RATE_MEASURE_CHAR)) {
-        heartRate = characteristic.getValue();
-        isCharRead = true;
-        int mTemp = 0;
-        if (((int) (heartRate[0] & 0x1)) == 0) {
-          mTemp = (heartRate[1] & 0xff);
-        } else {
-          mTemp = (heartRate[2] & 0xff);
-        }
-        ValueChanged("", 0, 0, mTemp + "times/sec");
-      } else if (characteristic.getUuid().equals(BLEList.TXPOWER_CHAR)) {
-        txPower = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-        isCharRead = true;
-        ValueChanged("", txPower, 0, "");
-      } else if (characteristic.getUuid().equals(BLEList.LINKLOSS_CHAR)) {
-        linkLoss_value = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-        isCharRead = true;
-        ValueChanged("", linkLoss_value, 0, "");
-      } else {
+ 
         data = characteristic.getValue();
         //xx no 32
         intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, intOffset);
         stringValue = characteristic.getStringValue(strOffset);
-        //xx no float
-        //floatValue = characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_FLOAT, floatOffset);
         byteValue = "";
         for (byte i : data) {
           byteValue += i;
         }
         isCharRead = true;
         ValueChanged(byteValue, intValue, floatValue, stringValue);
-      }
     }
 
     @Override
@@ -770,3 +685,5 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
     }
   };
 }
+
+

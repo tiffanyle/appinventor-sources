@@ -6007,4 +6007,8 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WriteFindMeMethods();
   
+  @DefaultMessage("getSupportedGattServices")
+  @Description("")
+  String getSupportedGattServicesMethods();
+  
 }
