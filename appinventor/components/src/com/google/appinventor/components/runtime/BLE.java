@@ -476,8 +476,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
     return serviceUUIDList;
 }
   
-  //      for (int i = 0; i < mGattService.size(); i++) {
- // if (mGattService.get(i).getUuid()
+
   
   
   
