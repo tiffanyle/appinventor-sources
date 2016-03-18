@@ -67,6 +67,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
   private String deviceInfoList = "";
   private List<BluetoothDevice> mLeDevices;
   private List<BluetoothGattService> mGattService;
+  private String serviceUUIDList;
   private BluetoothGattCharacteristic mGattChar;
   private HashMap<BluetoothDevice, Integer> mLeDeviceRssi;
 
@@ -118,7 +119,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
     if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
       isEnabled = false;
       LogMessage("No Valid BTLE Device on platform", "e");
-      form.dispatchErrorOccurredEvent(this, "WICEDSense", ErrorMessages.ERROR_BLUETOOTH_NOT_ENABLED);
+      form.dispatchErrorOccurredEvent(this, "BLE", ErrorMessages.ERROR_BLUETOOTH_NOT_ENABLED);
     } else {
       isEnabled = true;
       LogMessage("BLE Device found", "i");
@@ -464,11 +465,24 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
   }
   
   @SimpleFunction(description="Get Supported GATT Services")
-  public List<BluetoothGattService> getSupportedGattServices() {
-    if (mGattService == null) return null;
-
-    return mGattService;
+  public String getSupportedGattServices() {
+    if (mGattService == null) return "empty" + ",";
+    serviceUUIDList = "";
+    for (int i =0; i < mGattService.size(); i++){
+      
+        serviceUUIDList += mGattService.get(i).getUuid().toString() + ",";
+   
+    }
+    return serviceUUIDList;
 }
+  
+  //      for (int i = 0; i < mGattService.size(); i++) {
+ // if (mGattService.get(i).getUuid()
+  
+  
+  
+  
+  
   
   /**
    * Functions
@@ -620,6 +634,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
     // New services discovered
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
       if (status == BluetoothGatt.GATT_SUCCESS) {
+      
         mGattService = (ArrayList<BluetoothGattService>) gatt.getServices();
         isServiceRead = true;
       }
