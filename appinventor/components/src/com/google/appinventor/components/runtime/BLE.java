@@ -466,11 +466,16 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
   
   @SimpleFunction(description="Get Supported GATT Services")
   public String getSupportedGattServices() {
-    if (mGattService == null) return "empty" + ",";
-    serviceUUIDList = "";
+    if (mGattService == null) return ",";
+    serviceUUIDList = ", ";
     for (int i =0; i < mGattService.size(); i++){
-      
-        serviceUUIDList += mGattService.get(i).getUuid().toString() + ",";
+        if (i==0){
+          serviceUUIDList = "";
+        }
+        String serviceUUID = mGattService.get(i).getUuid().toString();
+        String unknownServiceString = "Unknown Service";
+        String serviceName = BluetoothLEGattAttributes.lookup(serviceUUID, unknownServiceString);
+        serviceUUIDList += serviceUUID + " "+ serviceName + ",";
    
     }
     return serviceUUIDList;
