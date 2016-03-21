@@ -378,8 +378,10 @@ public class YaVersion {
   // - CLOCK_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 150:
   // - IMAGE_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 151:
+  // - BLUETOOTHLE_COMPONENT_VERSION is 1
 
-  public static final int YOUNG_ANDROID_VERSION = 150;
+  public static final int YOUNG_ANDROID_VERSION = 151;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -536,6 +538,9 @@ public class YaVersion {
   // For BLUETOOTHSERVER_COMPONENT_VERSION 5:
   // - The BluetoothServer.Secure property was added.
   public static final int BLUETOOTHSERVER_COMPONENT_VERSION = 5;
+
+  //For BLUETOOTHLE_COMPONENT_VERSION: Initial Version
+  public static final int BLUETOOTHLE_COMPONENT_VERSION = 1;
 
   // For BUTTON_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

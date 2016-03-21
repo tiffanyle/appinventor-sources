@@ -1182,6 +1182,13 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End BluetoothServer upgraders
 
+  "BluetoothLE": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End BluetoothLE upgraders
+
   "Button": {
 
     // A1: The Alignment property was renamed to TextAlignment.
@@ -1343,8 +1350,7 @@ Blockly.Versioning.AllUpgradeMaps =
     6: "noUpgrade"
 
   }, // End ContactPicker upgraders
-
-
+  
   "DatePicker": {
 
     // AI2: The datepicker dialog was updated to show the current date
