@@ -130,11 +130,10 @@
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
-        <pathelement location="${lib.dir}/android/4.3/android.jar" />
+        <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
         <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
         <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
-        <pathelement location="${lib.dir}/powermock/javassist-3.18.0-GA.jar" />
         <!-- Conditionally included libraries -->
         <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
         <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
@@ -180,7 +179,7 @@
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
     <!-- android.jar must go last on the classpath list
          so that its junit (or other) stubs don't override the real ones -->
-    <pathelement location="${lib.dir}/android/4.3/android.jar" />
+    <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
   </path>
 
   <path id="AndroidRuntimeTests.path">
@@ -238,7 +237,7 @@
           <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
           <pathelement location="${local.build.dir}/HtmlEntities.jar" />
           <pathelement location="${public.build.dir}/CommonConstants.jar" />
-          <pathelement location="${lib.dir}/android/4.3/android.jar" />
+          <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
           <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
           <pathelement location="${lib.dir}/gson/gson-2.1.jar" />
           <pathelement location="${lib.dir}/json/json.jar" />
@@ -246,7 +245,6 @@
           <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
-          <pathelement location="${lib.dir}/powermock/javassist-3.18.0-GA.jar" />
           <pathelement location="${lib.dir}/apache-http/httpcore-4.3.2.jar" />
           <pathelement location="${lib.dir}/apache-http/httpmime-4.3.4.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
@@ -666,7 +664,7 @@
       <include name="${barcode.pkg}/**/*.java" />
       <classpath>
         <pathelement location="${lib.dir}/QRGenerator/core.jar" />
-        <pathelement location="${lib.dir}/android/4.3/android.jar" />
+        <pathelement location="${lib.dir}/android/5.1.1/android.jar" />
       </classpath>
     </ai.javac5>
 

@@ -156,6 +156,7 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }
+    addAcceptableCompanionPackage(YaVersion.ACCEPTABLE_COMPANION_PACKAGE);
   }
 
   /*
@@ -773,6 +774,22 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     doSwitchLanguage(formName, languageSetting);
   }
 
+  /**
+   * Trigger and Update of the Companion if the Companion is connected
+   * and an update is available. Note: We do not compare the currently
+   * running Companion's version against the version we are going to load
+   * we just do it. If YaVersion.COMPANION_UPDATE_URL is "", then no
+   * Update is available.
+   */
+
+  public void updateCompanion() {
+    updateCompanion(formName);
+  }
+
+  public static void updateCompanion(String formName) {
+    doUpdateCompanion(formName);
+  }
+
   public static String getLocalizedPropertyName(String key) {
     return ComponentsTranslation.getPropertyName(key);
   }
@@ -988,6 +1005,10 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     $wnd.COMPANION_UPDATE_URL = url;
   }-*/;
 
+  static native void addAcceptableCompanionPackage(String comp) /*-{
+    $wnd.ACCEPTABLE_COMPANION_PACKAGE = comp;
+  }-*/;
+
   static native void addAcceptableCompanion(String comp) /*-{
     if ($wnd.ACCEPTABLE_COMPANIONS === null ||
         $wnd.ACCEPTABLE_COMPANIONS === undefined) {
@@ -1006,6 +1027,10 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
    */
   public static native void doSwitchLanguage(String formName, String language) /*-{
     $wnd.Blocklies[formName].language_switch.switchLanguage(language);
+  }-*/;
+
+  public static native void doUpdateCompanion(String formName) /*-{
+    $wnd.Blocklies[formName].ReplMgr.triggerUpdate();
   }-*/;
 
   public static native String getURL() /*-{

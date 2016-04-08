@@ -89,6 +89,17 @@ Blockly.ReplMgr.buildYail = function() {
         phoneState.componentYail = "";
     }
 
+    var propertyNameConverter;
+    if (this.nofqcn) {
+        propertyNameConverter = function(input) {
+            var s = input.split('.');
+            return s[s.length-1];
+        };
+    } else {
+        propertyNameConverter = function(input) {
+            return input;
+        };
+    }
     var jsonObject = JSON.parse(phoneState.formJson);
     var formProperties;
     var formName;
@@ -105,7 +116,7 @@ Blockly.ReplMgr.buildYail = function() {
             code.push(Blockly.Yail.getComponentRenameString("Screen1", formName));
         var sourceType = jsonObject.Source;
         if (sourceType == "Form") {
-            code = code.concat(Blockly.Yail.getComponentLines(formName, formProperties, null /*parent*/, componentMap, true /* forRepl */));
+            code = code.concat(Blockly.Yail.getComponentLines(formName, formProperties, null /*parent*/, componentMap, true /* forRepl */, propertyNameConverter));
         } else {
             throw "Source type " + sourceType + " is invalid.";
         }
@@ -369,12 +380,39 @@ Blockly.ReplMgr.putYail = (function() {
                         return;
                     } else {
                         var json = goog.json.parse(this.response);
+                        if (!Blockly.ReplMgr.acceptablePackage(json["package"])) {
+                            dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
+                                                             Blockly.Msg.REPL_COMPANION_WRONG_PACKAGE,
+                                                             Blockly.Msg.REPL_OK, null, 0, function() {
+                                                                 dialog.hide();
+                                                             });
+                            engine.resetcompanion();
+                            return;
+                        }
                         if (!Blockly.ReplMgr.acceptableVersion(json.version)) {
                             engine.checkversionupgrade(false, json.installer, false);
                             return;
                         }
+                        if (!json.fqcn) {
+                            // Set a compatibility flag to indicate that we
+                            // should trim package names from Component blocks
+                            // because we are talking to an old pre-cdk Companion
+                            context.nofqcn = true;
+                        } else {
+                            context.nofqcn = false;
+                        }
                     }
-                    engine.pollphone();
+                    // We have to reset the yail state because
+                    // we may have a queue of pending yail, yet we may
+                    // have also just changed the nofqcn flag. So we
+                    // need to force re-generation of the yail. When
+                    // we no longer need to be compatible, we can remove this
+                    // code (the reseting code, LEAVE the pollphone() call
+                    // or visit the land of the lost!
+                    context.resetYail(true); // Reset (partial reset)
+                    rs.phoneState.phoneQueue = []; // But flush the queue of pending code
+                    context.pollYail();  // Regenerate
+                    engine.pollphone();  // Next...
                     return;
                 }
                 if (this.readyState == 4) { // Old Companion, doesn't do CORS so we fail to talk to it
@@ -517,6 +555,16 @@ Blockly.ReplMgr.triggerUpdate = function() {
         reset();
     };
 
+    if (top.COMPANION_UPDATE_URL === "") {
+        showdialog(Blockly.Msg.REPL_OK, Blockly.Msg.REPL_UPDATE_NO_UPDATE);
+        return;
+    }
+
+    if (top.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
+        showdialog(Blockly.Msg.REPL_OK, Blockly.Msg.REPL_UPDATE_NO_CONNECTION);
+        return;
+    }
+
     encoder.add('package', 'update.apk');
     var qs = encoder.toString();
     fetchconn.open("GET", top.COMPANION_UPDATE_URL, true);
@@ -533,6 +581,10 @@ Blockly.ReplMgr.triggerUpdate = function() {
                                              conn.onreadystatechange = function() {
                                                  if (this.readyState == 4 && this.status == 200) {
                                                      console.log("Update: _package success");
+                                                     reset(); //  New companion, no connection left!
+                                                 } else if (this.readyState == 4) {
+                                                     console.log("Update: _package state = 4 probably ok");
+                                                     reset();
                                                  }
                                              };
                                              conn.send(qs);
@@ -551,9 +603,17 @@ Blockly.ReplMgr.triggerUpdate = function() {
     fetchconn.send();
 };
 
+Blockly.ReplMgr.acceptablePackage = function(comppack) {
+    if (comppack == top.ACCEPTABLE_COMPANION_PACKAGE) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
 Blockly.ReplMgr.acceptableVersion = function(version) {
-    for (var i = 0; i < window.parent.ACCEPTABLE_COMPANIONS.length; i++) {
-        if (window.parent.ACCEPTABLE_COMPANIONS[i] == version) {
+    for (var i = 0; i < top.ACCEPTABLE_COMPANIONS.length; i++) {
+        if (top.ACCEPTABLE_COMPANIONS[i] == version) {
             return true;
         }
     }
