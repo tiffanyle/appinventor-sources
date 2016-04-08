@@ -6011,4 +6011,16 @@ public interface OdeMessages extends Messages {
   @Description("")
   String getSupportedGattServicesMethods();
   
+  @DefaultMessage("getGattServicebyIndex")
+  @Description("")
+  String getGattServicebyIndexMethods();
+
+  @DefaultMessage("getSupportedGattCharacteristics")
+  @Description("")
+  String getSupportedGattCharacteristicsMethods();
+  
+  @DefaultMessage("getGattCharacteristicbyIndex")
+  @Description("")
+  String getGattCharacteristicbyIndexMethods();
+  
 }

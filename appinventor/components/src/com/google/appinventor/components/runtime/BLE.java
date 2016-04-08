@@ -67,7 +67,9 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
   private String deviceInfoList = "";
   private List<BluetoothDevice> mLeDevices;
   private List<BluetoothGattService> mGattService;
+  private ArrayList<BluetoothGattCharacteristic> gattChars;
   private String serviceUUIDList;
+  private String charUUIDList;
   private BluetoothGattCharacteristic mGattChar;
   private HashMap<BluetoothDevice, Integer> mLeDeviceRssi;
 
@@ -106,6 +108,7 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
     activity = (Activity) container.$context();
     mLeDevices = new ArrayList<BluetoothDevice>();
     mGattService = new ArrayList<BluetoothGattService>();
+    gattChars = new ArrayList<BluetoothGattCharacteristic>();
     mLeDeviceRssi = new HashMap<BluetoothDevice, Integer>();
     gattList = new HashMap<String, BluetoothGatt>();
     uiThread = new Handler();
@@ -481,12 +484,38 @@ public class BLE extends AndroidNonvisibleComponent implements Component {
     return serviceUUIDList;
 }
   
-
+  @SimpleFunction(description="Get Service by index. Index specified by list in getSupportedGattServices.")
+  public String getGattServicebyIndex(int index) {
+    return mGattService.get(index).getUuid().toString();
+  }
+  
+  @SimpleFunction(description="Get Supported GATT Characteristics")
+  public String getSupportedGattCharacteristics() {
+    if (mGattService == null) return ",";
+    charUUIDList = ", ";
+    for (int i =0; i < mGattService.size(); i++){
+        if (i==0){
+          charUUIDList = "";
+        }
+        for(BluetoothGattCharacteristic characteristic: mGattService.get(i).getCharacteristics()){
+          gattChars.add(characteristic);
+        }
+    }
+        String unknownCharString = "Unknown Characteristic";
+        for (int j = 0; j < gattChars.size(); j++){
+          String charUUID = gattChars.get(j).getUuid().toString();
+          String charName = BluetoothLEGattAttributes.lookup(charUUID, unknownCharString);
+          charUUIDList += charUUID + " "+ charName + ",";
+        }
+    
+    return charUUIDList;
+}
   
   
-  
-  
-  
+  @SimpleFunction(description="Get Characteristic by index. Index specified by list in getSupportedGattCharacteristics.")
+  public String getGattCharacteristicbyIndex(int index) {
+    return gattChars.get(index).getUuid().toString();
+  }  
   
   /**
    * Functions
