@@ -6,38 +6,18 @@
 
 package com.google.appinventor.components.runtime;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.Collections;
-import java.util.Comparator;
-
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesPermissions;
+import android.app.Activity;
+import android.bluetooth.*;
+import android.content.Context;
+import android.os.Handler;
+import android.util.Log;
+import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothProfile;
-import android.os.Handler;
-import android.util.Log;
-import android.content.Context;
-import android.app.Activity;
+import java.util.*;
 
 /**
  * @author Tony Chan ( kwong3513@yahoo.com.hk )
@@ -59,7 +39,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   /**
    * Basic Variable
    */
-  private static final String LOG_TAG = "BLEComponent";
+  private static final String LOG_TAG = "BluetoothLEComponent";
   private final Activity activity;
   private BluetoothAdapter mBluetoothAdapter;
   private BluetoothGatt currentBluetoothGatt;
@@ -79,7 +59,9 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   private String deviceInfoList = "";
   private List<BluetoothDevice> mLeDevices;
   private List<BluetoothGattService> mGattService;
+  private ArrayList<BluetoothGattCharacteristic> gattChars;
   private String serviceUUIDList;
+  private String charUUIDList;
   private BluetoothGattCharacteristic mGattChar;
   private HashMap<BluetoothDevice, Integer> mLeDeviceRssi;
 
@@ -118,6 +100,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     activity = (Activity) container.$context();
     mLeDevices = new ArrayList<BluetoothDevice>();
     mGattService = new ArrayList<BluetoothGattService>();
+    gattChars = new ArrayList<BluetoothGattCharacteristic>();
     mLeDeviceRssi = new HashMap<BluetoothDevice, Integer>();
     gattList = new HashMap<String, BluetoothGatt>();
     uiThread = new Handler();
@@ -493,12 +476,38 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     return serviceUUIDList;
 }
   
+  @SimpleFunction(description="Get Service by index. Index specified by list in getSupportedGattServices.")
+  public String getGattServicebyIndex(int index) {
+    return mGattService.get(index).getUuid().toString();
+  }
+  
+  @SimpleFunction(description="Get Supported GATT Characteristics")
+  public String getSupportedGattCharacteristics() {
+    if (mGattService == null) return ",";
+    charUUIDList = ", ";
+    for (int i =0; i < mGattService.size(); i++){
+        if (i==0){
+          charUUIDList = "";
+        }
+        for(BluetoothGattCharacteristic characteristic: mGattService.get(i).getCharacteristics()){
+          gattChars.add(characteristic);
+        }
+    }
+        String unknownCharString = "Unknown Characteristic";
+        for (int j = 0; j < gattChars.size(); j++){
+          String charUUID = gattChars.get(j).getUuid().toString();
+          String charName = BluetoothLEGattAttributes.lookup(charUUID, unknownCharString);
+          charUUIDList += charUUID + " "+ charName + ",";
+        }
 
+    return charUUIDList;
+}
   
   
-  
-  
-  
+  @SimpleFunction(description="Get Characteristic by index. Index specified by list in getSupportedGattCharacteristics.")
+  public String getGattCharacteristicbyIndex(int index) {
+    return gattChars.get(index).getUuid().toString();
+  }
   
   /**
    * Functions
@@ -537,7 +546,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
         if (mGattService.get(i).getUuid().equals(ser_uuid)) {
           
           BluetoothGattDescriptor desc = mGattService.get(i).getCharacteristic(char_uuid)
-              .getDescriptor(BluetoothLEList.CHAR_CONFIG_DES);
+              .getDescriptor(UUID.fromString(BluetoothLEGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
           
           mGattChar = mGattService.get(i).getCharacteristic(char_uuid);
           
@@ -550,7 +559,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
             }
             currentBluetoothGatt.writeDescriptor(desc);
           }
-          
+
           if(mGattChar != null) {
             currentBluetoothGatt.setCharacteristicNotification(mGattChar, true);
             isCharRead = currentBluetoothGatt.readCharacteristic(mGattChar);

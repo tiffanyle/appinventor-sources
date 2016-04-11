@@ -7,7 +7,6 @@
 package com.google.appinventor.components.runtime;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * This class includes a small subset of standard GATT attributes for supporting the
@@ -30,6 +29,7 @@ public class BluetoothLEGattAttributes {
     // Characteristics.
     attributes.put(HEART_RATE_MEASUREMENT, "Heart Rate Measurement");
     attributes.put("00002a29-0000-1000-8000-00805f9b34fb", "Manufacturer Name String");
+    attributes.put("00002a19-0000-1000-8000-00805f9b34fb", "Battery Level Characteristic");
   }
 
   public static String lookup(String uuid, String defaultName) {
