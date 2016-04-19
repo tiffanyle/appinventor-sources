@@ -6306,4 +6306,28 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("getGattCharacteristicbyIndex")
   @Description("")
   String getGattCharacteristicbyIndexMethods();
+
+  @DefaultMessage("StartAdvertising")
+  @Description("")
+  String StartAdvertisingMethods();
+
+  @DefaultMessage("ScanAdvertisements")
+  @Description("")
+  String ScanAdvertisementsMethods();
+
+  @DefaultMessage("StopAdvertising")
+  @Description("")
+  String StopAdvertisingMethods();
+
+  @DefaultMessage("StopScanningAdvertisements")
+  @Description("")
+  String StopScanningAdvertisementsMethods();
+
+  @DefaultMessage("AdvertisementScanResult")
+  @Description("")
+  String AdvertisementScanResultProperties();
+
+  @DefaultMessage("ScanPeriod")
+  @Description("")
+  String ScanPeriodProperties();
 }

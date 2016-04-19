@@ -19,6 +19,20 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import java.util.*;
 
+// TODO: Cristhian
+import android.bluetooth.le.BluetoothLeAdvertiser;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.AdvertiseData;
+import android.bluetooth.le.AdvertiseSettings;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
+import android.os.ParcelUuid;
+import java.nio.charset.Charset;
+
+
 /**
  * @author Tony Chan ( kwong3513@yahoo.com.hk )
  *         Beibei ZHANG ( beibei.zhang@connect.polyu.hk )
@@ -93,7 +107,46 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   private int intOffset = 0;
   private int strOffset = 0;
   private int floatOffset = 0;
-  
+
+
+  // TODO: Cristhian - BLE Advertisement testing
+  private BluetoothLeScanner mBluetoothLeScanner;
+  private Handler mHandler = new Handler();
+  private AdvertiseCallback mAdvertiseCallback;
+  private BluetoothLeAdvertiser mBluetoothLeAdvertiser;
+  private static final long SCAN_PERIOD = 5000;
+  private String advertisementScanResult = "";
+
+  // TODO: Cristhian - BLE Advertisemetn testing
+  private ScanCallback mScanCallback = new ScanCallback() {
+    @Override
+    public void onScanResult(int callbackType, ScanResult result) {
+        super.onScanResult(callbackType, result);
+        if( result == null
+                || result.getDevice() == null) // || TextUtils.isEmpty(result.getDevice().getName())
+            return;
+ 
+        StringBuilder builder = new StringBuilder( result.getDevice().getName() );
+ 
+        builder.append("\n").append(new String(result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids().get(0)), Charset.forName("UTF-8")));
+        
+        // TODO: return builder.toString() so that user can use it
+        advertisementScanResult = builder.toString();
+        // mText.setText(builder.toString());
+    }
+ 
+    @Override
+    public void onBatchScanResults(List<ScanResult> results) {
+        super.onBatchScanResults(results);
+    }
+ 
+    @Override
+    public void onScanFailed(int errorCode) {
+        LogMessage("Discovery onScanFailed: " + errorCode, "e" );
+        super.onScanFailed(errorCode);
+    }
+  };
+
 
   public BluetoothLE(ComponentContainer container) {
     super(container.$form());
@@ -278,6 +331,136 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     }
   }
 
+  // TODO: Cristhian
+  @SimpleFunction(description="Start BLE Advertising.")
+  public void StartAdvertising() {
+    //create a scan callback if it does not already exist. If it does, you're already scanning for ads.
+    if(mBluetoothAdapter != null) {
+      mBluetoothLeAdvertiser = mBluetoothAdapter.getBluetoothLeAdvertiser();  //newBLuetoothLeAdvertiser();
+
+
+      AdvertiseCallback advertisingCallback = new AdvertiseCallback() {
+        @Override
+        public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+          super.onStartSuccess(settingsInEffect);
+        }
+     
+        @Override
+        public void onStartFailure(int errorCode) {
+          LogMessage("Advertising onStartFailure: " + errorCode , "e");
+          super.onStartFailure(errorCode);
+        }
+      };
+
+      AdvertiseSettings advSettings = new AdvertiseSettings.Builder()
+        .setAdvertiseMode( AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY )
+        .setTxPowerLevel( AdvertiseSettings.ADVERTISE_TX_POWER_HIGH )
+        .setConnectable( false )
+        .build();
+
+      ParcelUuid pUuid = new ParcelUuid( UUID.fromString( "0000b81d-0000-1000-8000-00805f9b34fb" ) );
+ 
+      AdvertiseData advData = new AdvertiseData.Builder()
+              .setIncludeDeviceName( true )
+              .addServiceUuid( pUuid )
+              .addServiceData( pUuid, "Data".getBytes( Charset.forName( "UTF-8" ) ) )
+              .build();
+
+      
+      if (mAdvertiseCallback == null) {
+              // AdvertiseSettings settings = buildAdvertiseSettings(); 
+              AdvertiseSettings settings = advSettings;
+
+              // AdvertiseData data = buildAdvertiseData();
+              AdvertiseData data = advData;
+
+              // mAdvertiseCallback = new SampleAdvertiseCallback(); 
+              mAdvertiseCallback = advertisingCallback;
+
+              if (mBluetoothLeAdvertiser != null) {
+                  mBluetoothLeAdvertiser.startAdvertising(settings, data,
+                          mAdvertiseCallback);
+              }
+        }
+      
+      LogMessage("StartScanningAdvertisements Successfully.", "i");
+    }
+    else {
+      advertisementScanResult = "No bluetooth adapter";
+    }
+  }
+
+  // TODO: Cristhian 
+  @SimpleFunction(description="Stop BLE Advertising.")
+  public void StopAdvertising() {
+    LogMessage("Stopping BLE Advertising", "i");
+    if (mBluetoothLeAdvertiser != null) {
+        mBluetoothLeAdvertiser.stopAdvertising(mAdvertiseCallback);
+        mAdvertiseCallback = null;
+    }
+  }
+
+  // TODO: Cristhian
+  @SimpleFunction(description="Scans for BLE advertisements.")
+  public void ScanAdvertisements() {
+
+    // Will stop the scanning after a set time.
+    uiThread.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+            stopAdvertisementScanning();
+        }
+    }, SCAN_PERIOD);
+
+    if(mBluetoothAdapter != null) {
+      mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+
+      if(mScanCallback != null) {
+      
+        if(mBluetoothLeScanner != null) {
+          // ScanSettings settings = buildScanSettings();
+          ScanSettings settings = new ScanSettings.Builder()
+            .setScanMode( ScanSettings.SCAN_MODE_LOW_LATENCY )
+            .build();
+
+          // List<ScanFilter> filters = buildScanFilters();
+          List<ScanFilter> filters = new ArrayList<ScanFilter>();
+          ScanFilter filter = new ScanFilter.Builder()
+            .setServiceUuid( new ParcelUuid(UUID.fromString( "0000b81d-0000-1000-8000-00805f9b34fb" ) ) )
+            .build();
+          filters.add( filter );
+
+          if(settings != null && filters != null) {
+            mBluetoothLeScanner.startScan(filters, settings, mScanCallback);
+          }
+          else{
+            advertisementScanResult = "settings or filters are null";
+          }
+        }
+        else{
+          advertisementScanResult = "le scanner is null";
+        }
+      }
+      else {
+        advertisementScanResult = "mScanCallback is null";
+      }
+    }
+    else {
+      advertisementScanResult = "No bluetooth adapter";
+    }
+  }
+
+  // TODO: Cristhian
+  @SimpleFunction(description="Stops scanning for BLE advertisements.")
+  public void StopScanningAdvertisements() {
+    LogMessage("Stopping BLE advertsiment scan.", "i");
+    stopAdvertisementScanning();
+
+  }
+
+
+
+
   
   //@SimpleProperty(description="Return the battery level.", category = PropertyCategory.BEHAVIOR)
   public String BatteryValue() {
@@ -393,6 +576,18 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   @SimpleProperty(description="Return Byte value of read value.", category = PropertyCategory.BEHAVIOR)
   public String ByteGattValue() {
     return byteValue;
+  }
+
+  // TODO: Cristhian - BLE Advertisment testing
+  @SimpleProperty(description="Returns value of ScanPeriod.")
+  public long ScanPeriod() {
+    return SCAN_PERIOD;
+  }
+
+  // TODO: Cristhian - BLE Advertisment testing
+  @SimpleProperty(description="Returns result of advertisment scan.")
+  public String AdvertisementScanResult() {
+    return advertisementScanResult;
   }
   
 
@@ -724,6 +919,55 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       RssiChanged();
     }
   };
+
+  //TODO: Cristhian - BLE Advertismsent testing
+  /**
+   * Returns an AdvertiseSettings object set to use low power (to help preserve battery life)
+   * and disable the built-in timeout since this code uses its own timeout runnable.
+   */
+  private AdvertiseSettings buildAdvertiseSettings() {
+      AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
+      settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_POWER);
+      settingsBuilder.setTimeout(0);
+      return settingsBuilder.build();
+  }
+
+  
+  //TODO: Cristhian - BLE Advertismsent testing
+  /**
+   * Returns an AdvertiseData object which includes the Service UUID and Device Name.
+   */
+  private AdvertiseData buildAdvertiseData() {
+
+      /**
+       * Note: There is a strict limit of 31 Bytes on packets sent over BLE Advertisements.
+       *  This includes everything put into AdvertiseData including UUIDs, device info, &
+       *  arbitrary service or manufacturer data.
+       *  Attempting to send packets over this limit will result in a failure with error code
+       *  AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE. Catch this error in the
+       *  onStartFailure() method of an AdvertiseCallback implementation.
+       */
+
+      AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
+      dataBuilder.addServiceUuid(ParcelUuid.fromString("0000b81d-0000-1000-8000-00805f9b34fb"));
+      dataBuilder.setIncludeDeviceName(true);
+
+      /* For example - this will cause advertising to fail (exceeds size limit) */
+      //String failureData = "asdghkajsghalkxcjhfa;sghtalksjcfhalskfjhasldkjfhdskf";
+      //dataBuilder.addServiceData(Constants.Service_UUID, failureData.getBytes());
+
+      return dataBuilder.build();
+  }
+
+  // TODO: Cristhian - BLE Advertismsent testing
+  private void stopAdvertisementScanning() {
+    LogMessage("Stopping advertisement scanning.", "i");
+    mBluetoothLeScanner.stopScan(mScanCallback);
+    // mScanCallback = null;
+
+    // TODO: maybe update data that potentially is returned?
+  }
+
 }
 
 
