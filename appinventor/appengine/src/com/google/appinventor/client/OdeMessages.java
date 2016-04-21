@@ -6151,9 +6151,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String BatteryValueProperties();
 
-  @DefaultMessage("ByteGattValue")
+  @DefaultMessage("ByteValue")
   @Description("")
-  String ByteGattValueProperties();
+  String ByteValueProperties();
 
   @DefaultMessage("DeviceList")
   @Description("")
@@ -6175,13 +6175,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LinkLossValueProperties();
 
-  @DefaultMessage("IntGattValue")
+  @DefaultMessage("IntValue")
   @Description("")
-  String IntGattValueProperties();
+  String IntValueProperties();
 
-  @DefaultMessage("StringGattValue")
+  @DefaultMessage("StringValue")
   @Description("")
-  String StringGattValueProperties();
+  String StringValueProperties();
 
   @DefaultMessage("Connected")
   @Description("")
@@ -6291,19 +6291,19 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WriteFindMeMethods();
 
-  @DefaultMessage("getSupportedGattServices")
+  @DefaultMessage("getSupportedServices")
   @Description("")
-  String getSupportedGattServicesMethods();
+  String getSupportedServicesMethods();
 
-  @DefaultMessage("getGattServicebyIndex")
+  @DefaultMessage("getServicebyIndex")
   @Description("")
-  String getGattServicebyIndexMethods();
+  String getServicebyIndexMethods();
 
-  @DefaultMessage("getSupportedGattCharacteristics")
+  @DefaultMessage("getSupportedCharacteristics")
   @Description("")
-  String getSupportedGattCharacteristicsMethods();
+  String getSupportedCharacteristicsMethods();
   
-  @DefaultMessage("getGattCharacteristicbyIndex")
+  @DefaultMessage("getCharacteristicbyIndex")
   @Description("")
-  String getGattCharacteristicbyIndexMethods();
+  String getCharacteristicbyIndexMethods();
 }
