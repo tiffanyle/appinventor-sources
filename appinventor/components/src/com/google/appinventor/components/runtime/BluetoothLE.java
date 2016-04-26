@@ -218,19 +218,19 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   
   @SimpleFunction(description="Read Integer value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
       + " are required. Offset specifies the start position of reading data.")
-  public int ReadIntValue(String service_uuid, String characteristic_uuid, int intOffset) {
+  public void ReadIntValue(String service_uuid, String characteristic_uuid, int intOffset) {
     this.intOffset = intOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
-    return intValue;
+   
   }
   
   
   @SimpleFunction(description="Read String value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
       + " are required. Offset specifies the start position of reading data.")
-  public String ReadStringValue(String service_uuid, String characteristic_uuid, int strOffset) {
+  public void ReadStringValue(String service_uuid, String characteristic_uuid, int strOffset) {
     this.strOffset = strOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
-    return stringValue;
+    
   }
   
   
@@ -243,9 +243,8 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   
   
   @SimpleFunction(description="Read Byte value from a connected BluetoothLE device. Service Unique ID and Characteristic Unique ID are required.")
-  public String ReadByteValue(String service_uuid, String characteristic_uuid) {
+  public void ReadByteValue(String service_uuid, String characteristic_uuid) {
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
-    return byteValue;
   }
 
   
