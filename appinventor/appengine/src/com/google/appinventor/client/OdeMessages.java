@@ -6291,19 +6291,43 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WriteFindMeMethods();
 
-  @DefaultMessage("getSupportedServices")
+  @DefaultMessage("GetSupportedServices")
   @Description("")
-  String getSupportedServicesMethods();
+  String GetSupportedServicesMethods();
 
-  @DefaultMessage("getServicebyIndex")
+  @DefaultMessage("GetServicebyIndex")
   @Description("")
-  String getServicebyIndexMethods();
+  String GetServicebyIndexMethods();
 
-  @DefaultMessage("getSupportedCharacteristics")
+  @DefaultMessage("GetSupportedCharacteristics")
   @Description("")
-  String getSupportedCharacteristicsMethods();
+  String GetSupportedCharacteristicsMethods();
   
-  @DefaultMessage("getCharacteristicbyIndex")
+  @DefaultMessage("GetCharacteristicbyIndex")
   @Description("")
-  String getCharacteristicbyIndexMethods();
+  String GetCharacteristicbyIndexMethods();
+
+  @DefaultMessage("ByteValueRead")
+  @Description("")
+  String ByteValueReadEvents();
+  
+  @DefaultMessage("IntValueRead")
+  @Description("")
+  String IntValueReadEvents();
+  
+  @DefaultMessage("StringValueRead")
+  @Description("")
+  String StringValueReadEvents();
+  
+  @DefaultMessage("ByteValueChanged")
+  @Description("")
+  String ByteValueChangedEvents();
+  
+  @DefaultMessage("IntValueChanged")
+  @Description("")
+  String IntValueChangedEvents();
+  
+  @DefaultMessage("StringValueChanged")
+  @Description("")
+  String StringValueChangedEvents();
 }
