@@ -36,7 +36,7 @@ import java.nio.charset.Charset;
 /**
  * @author Tony Chan ( kwong3513@yahoo.com.hk )
  *         Beibei ZHANG ( beibei.zhang@connect.polyu.hk )
- *         Tiffany Le ( tiffanyle@gmail.com )
+ *         Tiffany Le ( tiffanyl@mit.edu )
  *         Andrew F. McKinney ( mckinney@mit.edu )
  */
 
@@ -197,23 +197,23 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     return bluetoothManager.getAdapter();
   }
 
-  @SimpleFunction(description="Start Scanning BluetoothLE device.")
+  @SimpleFunction(description="Start Scanning for BluetoothLE devices.")
   public void StartScanning() {
     if (!mLeDevices.isEmpty()) {
       mLeDevices.clear();
       mLeDeviceRssi.clear();
     }
     mBluetoothAdapter.startLeScan(mLeScanCallback);
-    LogMessage("StarScanning Successfully.", "i");
+    LogMessage("StartScanning Successfully.", "i");
   }
 
-  @SimpleFunction(description="Stop Scanning BluetoothLE device.")
+  @SimpleFunction(description="Stop Scanning for BluetoothLE devices.")
   public void StopScanning() {
     mBluetoothAdapter.stopLeScan(mLeScanCallback);
     LogMessage("StopScanning Successfully.", "i");
   }
 
-  @SimpleFunction(description="Connect to BluetoothLE device with index. Index specifies the position of DeviceList.")
+  @SimpleFunction(description="Connect to a BluetoothLE device with index. Index specifies the position in BluetoothLE device list, starting from 0.")
   public void Connect(int index) {
     BluetoothGattCallback newGattCallback = null;
     currentBluetoothGatt = mLeDevices.get(index - 1).connectGatt(activity, false, initCallBack(newGattCallback));
@@ -254,52 +254,54 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     }
   }
 
-  
-  @SimpleFunction(description="Write String value to a connected BluetoothLE device. Service UUID, Characteristic UUID and String value"
+ 
+  @SimpleFunction(description="Write String value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and String value"
       + "are required.")
   public void WriteStringValue(String service_uuid, String characteristic_uuid, String value) {
     writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), value);
   }
   
   
-  @SimpleFunction(description="Write Integer value to a connected BluetoothLE device. Service UUID, Characteristic UUID, Integer value"
+  @SimpleFunction(description="Write Integer value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID, Integer value"
       + " and offset are required. Offset specifies the start position of writing data.")
   public void WriteIntValue(String service_uuid, String characteristic_uuid, int value, int offset) {
     writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), value, BluetoothGattCharacteristic.FORMAT_SINT32, offset);
   }
   
-
-  @SimpleFunction(description="Read Integer value from a connected BluetoothLE device. Service UUID, Characteristic UUID and offset"
+  
+  @SimpleFunction(description="Read Integer value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
       + " are required. Offset specifies the start position of reading data.")
   public void ReadIntValue(String service_uuid, String characteristic_uuid, int intOffset) {
     this.intOffset = intOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
+   
   }
   
   
-  @SimpleFunction(description="Read String value from a connected BluetoothLE device. Service UUID, Characteristic UUID and offset"
+  @SimpleFunction(description="Read String value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
       + " are required. Offset specifies the start position of reading data.")
   public void ReadStringValue(String service_uuid, String characteristic_uuid, int strOffset) {
     this.strOffset = strOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
+    
   }
   
   
-  @SimpleFunction(description="Read Float value from a connected BluetoothLE device. Service UUID, Characteristic UUID and offset"
-      + " are required. Offset specifies the start position of reading data.")
+  //@SimpleFunction(description="Read Float value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
+    //  + " are required. Offset specifies the start position of reading data.")
   public void ReadFloatValue(String service_uuid, String characteristic_uuid, int floatOffset) {
     this.floatOffset = floatOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
   }
   
   
-  @SimpleFunction(description="Read Byte value from a connected BluetoothLE device. Service UUID and Characteristic UUID are required.")
+  @SimpleFunction(description="Read Byte value from a connected BluetoothLE device. Service Unique ID and Characteristic Unique ID are required.")
   public void ReadByteValue(String service_uuid, String characteristic_uuid) {
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
   }
 
   
-  @SimpleFunction(description="Get the Rssi of found device by index. Index specifies the position of DeviceList.")
+  @SimpleFunction(description="Get the RSSI (Received Signal Strength Indicator) of found device with index. Index specifies the position in BluetoothLE device list, starting from 0.")
   public int FoundDeviceRssi(int index) {
     if (index <= mLeDevices.size())
       return mLeDeviceRssi.get(mLeDevices.get(index-1));
@@ -308,7 +310,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   }
 
   
-  @SimpleFunction(description="Get the name of found device by index. Index specifies the position of DeviceList.")
+  @SimpleFunction(description="Get the name of found device with index. Index specifies the position in BluetoothLE device list, starting from 0.")
   public String FoundDeviceName(int index) {
     if (index <= mLeDevices.size()) {
       LogMessage("Device Name is found", "i");
@@ -320,7 +322,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   }
 
   
-  @SimpleFunction(description="Get the address of found device by index. Index specifies the position of DeviceList.")
+  @SimpleFunction(description="Get the address of found device with index. Index specifies the position in BluetoothLE device list, starting from 0.")
   public String FoundDeviceAddress(int index) {
     if (index <= mLeDevices.size()) {
       LogMessage("Device Address is found", "i");
@@ -330,6 +332,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       return "";
     }
   }
+
 
   // TODO: Cristhian
   @SimpleFunction(description="Start BLE Advertising.")
@@ -514,19 +517,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   }
 
   
-  //@SimpleProperty(description="Return the link loss value.", category = PropertyCategory.BEHAVIOR)
-  public String LinkLossValue() {
-    if (linkLoss_value == 0) {
-      return "No Alert";
-    } else if (linkLoss_value == 1) {
-      return "Mid Alert";
-    } else {
-      return "High Alert";
-    }
-  }
-
-  
-  @SimpleProperty(description="Return true if BluetoothLE device is connected; Otherwise, return false.", category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(description="Return true if a BluetoothLE device is connected; Otherwise, return false.", category = PropertyCategory.BEHAVIOR)
   public boolean IsDeviceConnected() {
     if (isConnected) {
       return true;
@@ -536,7 +527,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   }
   
 
-  @SimpleProperty(description="Return a sorted BluetoothLE device list. The return type is String.", category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(description="Return a sorted list of BluetoothLE devices as a String.", category = PropertyCategory.BEHAVIOR)
   public String DeviceList() {
     deviceInfoList = "";
     mLeDevices = sortDeviceList(mLeDevices);
@@ -555,26 +546,26 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   }
 
   
-  @SimpleProperty(description="Return the Rssi of connected device.", category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(description="Return the RSSI (Received Signal Strength Indicator) of connected device.", category = PropertyCategory.BEHAVIOR)
   public String ConnectedDeviceRssi() {
     return Integer.toString(device_rssi);
   }
 
   
-  @SimpleProperty(description="Return Integer value of read value.", category = PropertyCategory.BEHAVIOR)
-  public int IntGattValue() {
+  //@SimpleProperty(description="Return Integer value of read value.", category = PropertyCategory.BEHAVIOR)
+  public int IntValue() {
     return intValue;
   }
 
   
-  @SimpleProperty(description="Return String value of read value.", category = PropertyCategory.BEHAVIOR)
-  public String StringGattValue() {
+  //@SimpleProperty(description="Return String value of read value.", category = PropertyCategory.BEHAVIOR)
+  public String StringValue() {
     return stringValue;
   }
 
   
-  @SimpleProperty(description="Return Byte value of read value.", category = PropertyCategory.BEHAVIOR)
-  public String ByteGattValue() {
+  //@SimpleProperty(description="Return Byte value of read value.", category = PropertyCategory.BEHAVIOR)
+  public String ByteValue() {
     return byteValue;
   }
 
@@ -591,7 +582,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   }
   
 
-  @SimpleEvent(description = "The event will be triggered when BluetoothLE device is connected.")
+  @SimpleEvent(description = "Trigger event when a BluetoothLE device is connected.")
   public void Connected() {
     uiThread.post(new Runnable() {
       @Override
@@ -602,26 +593,26 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   }
 
   
-  @SimpleEvent(description = "The event will be triggered when Rssi of found BluetoothLE device is changed.")
-  public void RssiChanged() {
+  @SimpleEvent(description = "Trigger event when RSSI (Received Signal Strength Indicator) of found BluetoothLE device changes")
+  public void RssiChanged(final int device_rssi) {
     uiThread.postDelayed(new Runnable() {
       @Override
       public void run() {
-        EventDispatcher.dispatchEvent(BluetoothLE.this, "RssiChanged");
+        EventDispatcher.dispatchEvent(BluetoothLE.this, "RssiChanged",device_rssi);
       }
 
     }, 1000);
   }
 
   
-  @SimpleEvent(description = "The event will be triggered when a new BluetoothLE device is found.")
+  @SimpleEvent(description = "Trigger event when a new BluetoothLE device is found.")
   public void DeviceFound() {
     EventDispatcher.dispatchEvent(this, "DeviceFound");
   }
 
   
-  @SimpleEvent(description = "The event will be triggered when value from connected BluetoothLE device is read. The value"
-      + " can be byte, Integer, float and String.")
+  //@SimpleEvent(description = "Trigger event when value from connected BluetoothLE device is read. The value"
+    //  + " can be byte, Integer, float, or String.")
   public void ValueRead(final String byteValue, final int intValue, final float floatValue, final String stringValue) {
     uiThread.post(new Runnable() {
       @Override
@@ -630,10 +621,39 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       }
     });
   }
-
   
-  @SimpleEvent(description = "The event will be triggered when value from connected BluetoothLE device is changed. The value"
-      + " can be byte, Integer, float and String.")
+  @SimpleEvent(description = "Trigger event when byte value from connected BluetoothLE device is read.")
+  public void ByteValueRead(final String byteValue) {
+    uiThread.post(new Runnable() {
+      @Override
+      public void run() {
+        EventDispatcher.dispatchEvent(BluetoothLE.this, "ByteValueRead", byteValue);
+      }
+    });
+  }
+  
+  @SimpleEvent(description = "Trigger event when int value from connected BluetoothLE device is read.")
+  public void IntValueRead(final int intValue) {
+    uiThread.post(new Runnable() {
+      @Override
+      public void run() {
+        EventDispatcher.dispatchEvent(BluetoothLE.this, "IntValueRead", intValue);
+      }
+    });
+  }
+
+  @SimpleEvent(description = "Trigger event when String value from connected BluetoothLE device is read.")
+  public void StringValueRead(final String stringValue) {
+    uiThread.post(new Runnable() {
+      @Override
+      public void run() {
+        EventDispatcher.dispatchEvent(BluetoothLE.this, "StringValueRead", stringValue);
+      }
+    });
+  }
+  
+  //@SimpleEvent(description = "Trigger event when value from connected BluetoothLE device is changed. The value"
+    //  + " can be byte, Integer, float, or String.")
   public void ValueChanged(final String byteValue, final int intValue, final float floatValue, final String stringValue) {
     uiThread.post(new Runnable() {
       @Override
@@ -643,8 +663,36 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     });
   }
   
+  @SimpleEvent(description = "Trigger event when byte value from connected BluetoothLE device is changed.")
+public void ByteValueChanged(final String byteValue) {
+  uiThread.post(new Runnable() {
+    @Override
+    public void run() {
+      EventDispatcher.dispatchEvent(BluetoothLE.this, "ByteValueChanged", byteValue);
+    }
+  });
+}
+  @SimpleEvent(description = "Trigger event when int value from connected BluetoothLE device is changed.")
+public void IntValueChanged(final int intValue) {
+  uiThread.post(new Runnable() {
+    @Override
+    public void run() {
+      EventDispatcher.dispatchEvent(BluetoothLE.this, "IntValueChanged", intValue);
+    }
+  });
+}
   
-  @SimpleEvent(description = "The event will be triggered when value is successful write to connected BluetoothLE device.")
+  @SimpleEvent(description = "Trigger event when String value from connected BluetoothLE device is changed.")
+public void StringValueChanged(final String stringValue) {
+  uiThread.post(new Runnable() {
+    @Override
+    public void run() {
+      EventDispatcher.dispatchEvent(BluetoothLE.this, "StringValueChanged", stringValue);
+    }
+  });
+}
+  
+  @SimpleEvent(description = "Trigger event when value is successfully written to connected BluetoothLE device.")
   public void ValueWrite() {
     uiThread.post(new Runnable() {
       @Override
@@ -654,8 +702,8 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     });
   }
   
-  @SimpleFunction(description="Get Supported GATT Services")
-  public String getSupportedGattServices() {
+  @SimpleFunction(description="Return list of supported services for connected device as a String")
+  public String GetSupportedServices() {
     if (mGattService == null) return ",";
     serviceUUIDList = ", ";
     for (int i =0; i < mGattService.size(); i++){
@@ -671,13 +719,13 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     return serviceUUIDList;
 }
   
-  @SimpleFunction(description="Get Service by index. Index specified by list in getSupportedGattServices.")
-  public String getGattServicebyIndex(int index) {
+  @SimpleFunction(description="Return Unique ID of selected service with index. Index specified by list of supported services for a connected device, starting from 0.")
+  public String GetServicebyIndex(int index) {
     return mGattService.get(index).getUuid().toString();
   }
   
-  @SimpleFunction(description="Get Supported GATT Characteristics")
-  public String getSupportedGattCharacteristics() {
+  @SimpleFunction(description="Return list of supported characteristics for connected device as a String")
+  public String GetSupportedCharacteristics() {
     if (mGattService == null) return ",";
     charUUIDList = ", ";
     for (int i =0; i < mGattService.size(); i++){
@@ -699,8 +747,8 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
 }
   
   
-  @SimpleFunction(description="Get Characteristic by index. Index specified by list in getSupportedGattCharacteristics.")
-  public String getGattCharacteristicbyIndex(int index) {
+  @SimpleFunction(description="Return Unique ID of selected characteristic with index. Index specified by list of supported characteristics for a connected device, starting from 0.")
+  public String GetCharacteristicbyIndex(int index) {
     return gattChars.get(index).getUuid().toString();
   }
   
@@ -730,7 +778,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     } else {
       mLeDeviceRssi.put(device, rssi);
     }
-    RssiChanged();
+    RssiChanged(rssi);
   }
 
   
@@ -875,7 +923,9 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
             byteValue += i;
           }
           isCharRead = true;
-          ValueRead(byteValue, intValue, floatValue, stringValue);
+          ByteValueRead(byteValue);
+          IntValueRead(intValue);
+          StringValueRead(stringValue);        
       }
     }
 
@@ -893,7 +943,9 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
           byteValue += i;
         }
         isCharRead = true;
-        ValueChanged(byteValue, intValue, floatValue, stringValue);
+        ByteValueChanged(byteValue);
+        IntValueChanged(intValue);
+        StringValueChanged(stringValue);
     }
 
     @Override
@@ -916,7 +968,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     @Override
     public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
       device_rssi = rssi;
-      RssiChanged();
+      RssiChanged(device_rssi);
     }
   };
 

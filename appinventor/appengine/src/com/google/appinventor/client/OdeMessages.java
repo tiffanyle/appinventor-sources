@@ -6151,9 +6151,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String BatteryValueProperties();
 
-  @DefaultMessage("ByteGattValue")
+  @DefaultMessage("ByteValue")
   @Description("")
-  String ByteGattValueProperties();
+  String ByteValueProperties();
 
   @DefaultMessage("DeviceList")
   @Description("")
@@ -6175,13 +6175,13 @@ public interface OdeMessages extends Messages {
   @Description("")
   String LinkLossValueProperties();
 
-  @DefaultMessage("IntGattValue")
+  @DefaultMessage("IntValue")
   @Description("")
-  String IntGattValueProperties();
+  String IntValueProperties();
 
-  @DefaultMessage("StringGattValue")
+  @DefaultMessage("StringValue")
   @Description("")
-  String StringGattValueProperties();
+  String StringValueProperties();
 
   @DefaultMessage("Connected")
   @Description("")
@@ -6291,21 +6291,21 @@ public interface OdeMessages extends Messages {
   @Description("")
   String WriteFindMeMethods();
 
-  @DefaultMessage("getSupportedGattServices")
+  @DefaultMessage("GetSupportedServices")
   @Description("")
-  String getSupportedGattServicesMethods();
+  String GetSupportedServicesMethods();
 
-  @DefaultMessage("getGattServicebyIndex")
+  @DefaultMessage("GetServicebyIndex")
   @Description("")
-  String getGattServicebyIndexMethods();
+  String GetServicebyIndexMethods();
 
-  @DefaultMessage("getSupportedGattCharacteristics")
+  @DefaultMessage("GetSupportedCharacteristics")
   @Description("")
-  String getSupportedGattCharacteristicsMethods();
+  String GetSupportedCharacteristicsMethods();
   
-  @DefaultMessage("getGattCharacteristicbyIndex")
+  @DefaultMessage("GetCharacteristicbyIndex")
   @Description("")
-  String getGattCharacteristicbyIndexMethods();
+  String GetCharacteristicbyIndexMethods();
 
   @DefaultMessage("StartAdvertising")
   @Description("")
@@ -6330,4 +6330,28 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ScanPeriod")
   @Description("")
   String ScanPeriodProperties();
+
+  @DefaultMessage("ByteValueRead")
+  @Description("")
+  String ByteValueReadEvents();
+  
+  @DefaultMessage("IntValueRead")
+  @Description("")
+  String IntValueReadEvents();
+  
+  @DefaultMessage("StringValueRead")
+  @Description("")
+  String StringValueReadEvents();
+  
+  @DefaultMessage("ByteValueChanged")
+  @Description("")
+  String ByteValueChangedEvents();
+  
+  @DefaultMessage("IntValueChanged")
+  @Description("")
+  String IntValueChangedEvents();
+  
+  @DefaultMessage("StringValueChanged")
+  @Description("")
+  String StringValueChangedEvents();
 }
