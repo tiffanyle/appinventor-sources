@@ -6330,4 +6330,12 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("StringValueChanged")
   @Description("")
   String StringValueChangedEvents();
+  
+  @DefaultMessage("FloatValueChanged")
+  @Description("")
+  String FloatValueChangedEvents();
+  
+  @DefaultMessage("FloatValueRead")
+  @Description("")
+  String FloatValueReadEvents();
 }

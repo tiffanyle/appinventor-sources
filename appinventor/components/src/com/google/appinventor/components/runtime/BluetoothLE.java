@@ -93,6 +93,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   private int intOffset = 0;
   private int strOffset = 0;
   private int floatOffset = 0;
+  private int charType = 0; //byte = 0; int = 1; string = 2; float = 3
   
 
   public BluetoothLE(ComponentContainer container) {
@@ -219,6 +220,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(description="Read Integer value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
       + " are required. Offset specifies the start position of reading data.")
   public void ReadIntValue(String service_uuid, String characteristic_uuid, int intOffset) {
+    charType = 1;
     this.intOffset = intOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
    
@@ -228,15 +230,17 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(description="Read String value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
       + " are required. Offset specifies the start position of reading data.")
   public void ReadStringValue(String service_uuid, String characteristic_uuid, int strOffset) {
+    charType = 2;
     this.strOffset = strOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
     
   }
   
   
-  //@SimpleFunction(description="Read Float value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
-    //  + " are required. Offset specifies the start position of reading data.")
+  @SimpleFunction(description="Read Float value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
+      + " are required. Offset specifies the start position of reading data.")
   public void ReadFloatValue(String service_uuid, String characteristic_uuid, int floatOffset) {
+    charType = 3;
     this.floatOffset = floatOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
   }
@@ -244,6 +248,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   
   @SimpleFunction(description="Read Byte value from a connected BluetoothLE device. Service Unique ID and Characteristic Unique ID are required.")
   public void ReadByteValue(String service_uuid, String characteristic_uuid) {
+    charType = 0;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
   }
 
@@ -311,7 +316,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   }
 
   
-  @SimpleProperty(description="Return the RSSI (Received Signal Strength Indicator) of connected device.", category = PropertyCategory.BEHAVIOR)
+  //@SimpleProperty(description="Return the RSSI (Received Signal Strength Indicator) of connected device.", category = PropertyCategory.BEHAVIOR)
   public String ConnectedDeviceRssi() {
     return Integer.toString(device_rssi);
   }
@@ -405,6 +410,16 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     });
   }
   
+  @SimpleEvent(description = "Trigger event when byte value from connected BluetoothLE device is read.")
+  public void FloatValueRead(final float floatValue) {
+    uiThread.post(new Runnable() {
+      @Override
+      public void run() {
+        EventDispatcher.dispatchEvent(BluetoothLE.this, "FloatValueRead", floatValue);
+      }
+    });
+  }
+  
   //@SimpleEvent(description = "Trigger event when value from connected BluetoothLE device is changed. The value"
     //  + " can be byte, Integer, float, or String.")
   public void ValueChanged(final String byteValue, final int intValue, final float floatValue, final String stringValue) {
@@ -434,6 +449,17 @@ public void IntValueChanged(final int intValue) {
     }
   });
 }
+  
+  @SimpleEvent(description = "Trigger event when int value from connected BluetoothLE device is changed.")
+public void FloatValueChanged(final float floatValue) {
+  uiThread.post(new Runnable() {
+    @Override
+    public void run() {
+      EventDispatcher.dispatchEvent(BluetoothLE.this, "FloatValueChanged", floatValue);
+    }
+  });
+}
+  
   
   @SimpleEvent(description = "Trigger event when String value from connected BluetoothLE device is changed.")
 public void StringValueChanged(final String stringValue) {
@@ -678,7 +704,8 @@ public void StringValueChanged(final String stringValue) {
           isCharRead = true;
           ByteValueRead(byteValue);
           IntValueRead(intValue);
-          StringValueRead(stringValue);        
+          StringValueRead(stringValue);
+          FloatValueRead(floatValue);
       }
     }
 
@@ -688,17 +715,50 @@ public void StringValueChanged(final String stringValue) {
       
  
         data = characteristic.getValue();
-        //xx no 32
-        intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, intOffset);
-        stringValue = characteristic.getStringValue(strOffset);
-        byteValue = "";
-        for (byte i : data) {
-          byteValue += i;
+        LogMessage("dataLength: " + data.length,"i");
+        switch (charType) {
+        case 0: 
+          byteValue = "";
+          for (byte i : data) {
+            byteValue += i;
+          }
+          LogMessage("byteValue: "+ byteValue,"i");
+          ByteValueChanged(byteValue);
+          break;
+        case 1: 
+          intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, intOffset);
+          LogMessage("intValue: " + intValue,"i");
+          IntValueChanged(intValue);
+          break;
+        case 2:   
+          stringValue = characteristic.getStringValue(strOffset);
+          LogMessage("stringValue: "+ stringValue,"i");
+          StringValueChanged(stringValue);
+          break;
+        case 3: 
+          if(data.length==1){
+            floatValue = (float)(data[0]*Math.pow(10,0));
+          }
+          else if (data.length==2 || data.length==3){
+            floatValue = characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_SFLOAT, floatOffset);
+          }
+          else{
+            floatValue = characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_FLOAT, floatOffset);
+          }
+          LogMessage("floatValue: " + floatValue,"i");
+          FloatValueChanged(floatValue);
+       default: 
+         byteValue = "";
+         for (byte i : data) {
+           byteValue += i;
+         }
+         LogMessage("byteValue: "+ byteValue,"i");
+         ByteValueChanged(byteValue);
+         break;
         }
+
         isCharRead = true;
-        ByteValueChanged(byteValue);
-        IntValueChanged(intValue);
-        StringValueChanged(stringValue);
+     
     }
 
     @Override
