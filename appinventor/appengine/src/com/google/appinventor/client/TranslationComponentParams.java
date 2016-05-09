@@ -200,6 +200,7 @@ public class TranslationComponentParams {
     map.put("colorCode", MESSAGES.colorCodeParams());
     map.put("colorName", MESSAGES.colorNameParams());
     map.put("fill", MESSAGES.fillParams());
+    map.put("filename", MESSAGES.filenameParams());
     map.put("frequency", MESSAGES.frequencyParams());
     map.put("height", MESSAGES.heightParams());
     map.put("no", MESSAGES.noParams());
