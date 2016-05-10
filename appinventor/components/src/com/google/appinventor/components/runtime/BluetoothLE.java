@@ -31,6 +31,7 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.os.ParcelUuid;
 import java.nio.charset.Charset;
+import android.text.TextUtils;
 
 
 /**
@@ -46,7 +47,7 @@ import java.nio.charset.Charset;
     nonVisible = true,
     iconName = "images/bluetooth.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.BLUETOOTH, " + "android.permission.BLUETOOTH_ADMIN")
+@UsesPermissions(permissionNames = "android.permission.BLUETOOTH, " + "android.permission.BLUETOOTH_ADMIN" + "android.permission.ACCESS_COARSE_LOCATION")
 
 public class BluetoothLE extends AndroidNonvisibleComponent implements Component {
 
@@ -118,29 +119,37 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   private static final long SCAN_PERIOD = 5000;
   private String advertisementScanResult = "";
 
-  // TODO: Cristhian - BLE Advertisemetn testing
+  // TODO: Cristhian - BLE Advertisement testing
   private ScanCallback mScanCallback = new ScanCallback() {
     @Override
     public void onScanResult(int callbackType, ScanResult result) {
-        super.onScanResult(callbackType, result);
-        if( result == null
-                || result.getDevice() == null) // || TextUtils.isEmpty(result.getDevice().getName())
-            return;
- 
-        StringBuilder builder = new StringBuilder( result.getDevice().getName() );
- 
-        builder.append("\n").append(new String(result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids().get(0)), Charset.forName("UTF-8")));
-        
-        // TODO: return builder.toString() so that user can use it
-        advertisementScanResult = builder.toString();
-        // mText.setText(builder.toString());
+      super.onScanResult(callbackType, result);
+      if( result == null
+              || result.getDevice() == null || TextUtils.isEmpty(result.getDevice().getName()))
+          return;
+
+      StringBuilder builder = new StringBuilder( result.getDevice().getName() );
+      LogMessage("FOUND DEVICE: " + result.getDevice(), "i");
+      LogMessage("" + result.getScanRecord(), "i");
+      LogMessage("" + result.getScanRecord().getServiceUuids().get(0), "i");
+
+      LogMessage("record service data" + result.getScanRecord().getServiceData(), "i");
+      // LogMessage("recurd uuids " + result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids(), "i");
+
+      // NOTE: line below prints out null
+      LogMessage("" + result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids().get(0)), "i");
+      builder.append("\n").append(new String(result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids().get(0)), Charset.forName("UTF-8")));
+
+      // TODO: return builder.toString() so that user can use it
+      advertisementScanResult = builder.toString();
+      // mText.setText(builder.toString());
     }
- 
+
     @Override
     public void onBatchScanResults(List<ScanResult> results) {
         super.onBatchScanResults(results);
     }
- 
+
     @Override
     public void onScanFailed(int errorCode) {
         LogMessage("Discovery onScanFailed: " + errorCode, "e" );
@@ -255,41 +264,34 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     }
   }
 
- 
   @SimpleFunction(description="Write String value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and String value"
       + "are required.")
   public void WriteStringValue(String service_uuid, String characteristic_uuid, String value) {
     writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), value);
   }
-  
-  
+
   @SimpleFunction(description="Write Integer value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID, Integer value"
       + " and offset are required. Offset specifies the start position of writing data.")
   public void WriteIntValue(String service_uuid, String characteristic_uuid, int value, int offset) {
     writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), value, BluetoothGattCharacteristic.FORMAT_SINT32, offset);
   }
-  
-  
+
   @SimpleFunction(description="Read Integer value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
       + " are required. Offset specifies the start position of reading data.")
   public void ReadIntValue(String service_uuid, String characteristic_uuid, int intOffset) {
     charType = 1;
     this.intOffset = intOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
-   
   }
-  
-  
+
   @SimpleFunction(description="Read String value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
       + " are required. Offset specifies the start position of reading data.")
   public void ReadStringValue(String service_uuid, String characteristic_uuid, int strOffset) {
     charType = 2;
     this.strOffset = strOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
-    
   }
-  
-  
+
   @SimpleFunction(description="Read Float value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
       + " are required. Offset specifies the start position of reading data.")
   public void ReadFloatValue(String service_uuid, String characteristic_uuid, int floatOffset) {
@@ -297,15 +299,13 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     this.floatOffset = floatOffset;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
   }
-  
-  
+
   @SimpleFunction(description="Read Byte value from a connected BluetoothLE device. Service Unique ID and Characteristic Unique ID are required.")
   public void ReadByteValue(String service_uuid, String characteristic_uuid) {
     charType = 0;
     readChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid));
   }
 
-  
   @SimpleFunction(description="Get the RSSI (Received Signal Strength Indicator) of found device with index. Index specifies the position in BluetoothLE device list, starting from 0.")
   public int FoundDeviceRssi(int index) {
     if (index <= mLeDevices.size())
@@ -314,7 +314,6 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       return -1;
   }
 
-  
   @SimpleFunction(description="Get the name of found device with index. Index specifies the position in BluetoothLE device list, starting from 0.")
   public String FoundDeviceName(int index) {
     if (index <= mLeDevices.size()) {
@@ -326,7 +325,6 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     }
   }
 
-  
   @SimpleFunction(description="Get the address of found device with index. Index specifies the position in BluetoothLE device list, starting from 0.")
   public String FoundDeviceAddress(int index) {
     if (index <= mLeDevices.size()) {
@@ -337,7 +335,6 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       return "";
     }
   }
-
 
   // TODO: Cristhian
   @SimpleFunction(description="Start BLE Advertising.")
@@ -352,7 +349,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
           super.onStartSuccess(settingsInEffect);
         }
-     
+
         @Override
         public void onStartFailure(int errorCode) {
           LogMessage("Advertising onStartFailure: " + errorCode , "e");
@@ -367,22 +364,21 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
         .build();
 
       ParcelUuid pUuid = new ParcelUuid( UUID.fromString( "0000b81d-0000-1000-8000-00805f9b34fb" ) );
- 
+
       AdvertiseData advData = new AdvertiseData.Builder()
               .setIncludeDeviceName( true )
               .addServiceUuid( pUuid )
               .addServiceData( pUuid, "Data".getBytes( Charset.forName( "UTF-8" ) ) )
               .build();
 
-      
       if (mAdvertiseCallback == null) {
-              // AdvertiseSettings settings = buildAdvertiseSettings(); 
+              // AdvertiseSettings settings = buildAdvertiseSettings();
               AdvertiseSettings settings = advSettings;
 
               // AdvertiseData data = buildAdvertiseData();
               AdvertiseData data = advData;
 
-              // mAdvertiseCallback = new SampleAdvertiseCallback(); 
+              // mAdvertiseCallback = new SampleAdvertiseCallback();
               mAdvertiseCallback = advertisingCallback;
 
               if (mBluetoothLeAdvertiser != null) {
@@ -390,7 +386,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
                           mAdvertiseCallback);
               }
         }
-      
+
       LogMessage("StartScanningAdvertisements Successfully.", "i");
     }
     else {
@@ -398,7 +394,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     }
   }
 
-  // TODO: Cristhian 
+  // TODO: Cristhian
   @SimpleFunction(description="Stop BLE Advertising.")
   public void StopAdvertising() {
     LogMessage("Stopping BLE Advertising", "i");
@@ -424,7 +420,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
 
       if(mScanCallback != null) {
-      
+
         if(mBluetoothLeScanner != null) {
           // ScanSettings settings = buildScanSettings();
           ScanSettings settings = new ScanSettings.Builder()
@@ -469,7 +465,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
 
 
 
-  
+
   //@SimpleProperty(description="Return the battery level.", category = PropertyCategory.BEHAVIOR)
   public String BatteryValue() {
     if (isCharRead) {
@@ -479,7 +475,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     }
   }
 
-  
+
   //@SimpleProperty(description="Return the temperature.", category = PropertyCategory.BEHAVIOR)
   public String TemperatureValue() {
     if (isCharRead) {
@@ -497,7 +493,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     }
   }
 
-  
+
   //@SimpleProperty(description="Return the heart rate.", category = PropertyCategory.BEHAVIOR)
   public String HeartRateValue() {
     if (isCharRead) {
@@ -515,13 +511,13 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     }
   }
 
-  
+
   //@SimpleProperty(description="Return the Tx power.", category = PropertyCategory.BEHAVIOR)
   public int TxPower() {
     return txPower;
   }
 
-  
+
   @SimpleProperty(description="Return true if a BluetoothLE device is connected; Otherwise, return false.", category = PropertyCategory.BEHAVIOR)
   public boolean IsDeviceConnected() {
     if (isConnected) {
@@ -530,7 +526,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       return false;
     }
   }
-  
+
 
   @SimpleProperty(description="Return a sorted list of BluetoothLE devices as a String.", category = PropertyCategory.BEHAVIOR)
   public String DeviceList() {
@@ -550,25 +546,25 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     return deviceInfoList;
   }
 
-  
+
   //@SimpleProperty(description="Return the RSSI (Received Signal Strength Indicator) of connected device.", category = PropertyCategory.BEHAVIOR)
   public String ConnectedDeviceRssi() {
     return Integer.toString(device_rssi);
   }
 
-  
+
   //@SimpleProperty(description="Return Integer value of read value.", category = PropertyCategory.BEHAVIOR)
   public int IntValue() {
     return intValue;
   }
 
-  
+
   //@SimpleProperty(description="Return String value of read value.", category = PropertyCategory.BEHAVIOR)
   public String StringValue() {
     return stringValue;
   }
 
-  
+
   //@SimpleProperty(description="Return Byte value of read value.", category = PropertyCategory.BEHAVIOR)
   public String ByteValue() {
     return byteValue;
@@ -585,7 +581,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   public String AdvertisementScanResult() {
     return advertisementScanResult;
   }
-  
+
 
   @SimpleEvent(description = "Trigger event when a BluetoothLE device is connected.")
   public void Connected() {
@@ -597,7 +593,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     });
   }
 
-  
+
   @SimpleEvent(description = "Trigger event when RSSI (Received Signal Strength Indicator) of found BluetoothLE device changes")
   public void RssiChanged(final int device_rssi) {
     uiThread.postDelayed(new Runnable() {
@@ -609,13 +605,13 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     }, 1000);
   }
 
-  
+
   @SimpleEvent(description = "Trigger event when a new BluetoothLE device is found.")
   public void DeviceFound() {
     EventDispatcher.dispatchEvent(this, "DeviceFound");
   }
 
-  
+
   //@SimpleEvent(description = "Trigger event when value from connected BluetoothLE device is read. The value"
     //  + " can be byte, Integer, float, or String.")
   public void ValueRead(final String byteValue, final int intValue, final float floatValue, final String stringValue) {
@@ -626,7 +622,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       }
     });
   }
-  
+
   @SimpleEvent(description = "Trigger event when byte value from connected BluetoothLE device is read.")
   public void ByteValueRead(final String byteValue) {
     uiThread.post(new Runnable() {
@@ -636,7 +632,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       }
     });
   }
-  
+
   @SimpleEvent(description = "Trigger event when int value from connected BluetoothLE device is read.")
   public void IntValueRead(final int intValue) {
     uiThread.post(new Runnable() {
@@ -656,7 +652,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       }
     });
   }
-  
+
   @SimpleEvent(description = "Trigger event when byte value from connected BluetoothLE device is read.")
   public void FloatValueRead(final float floatValue) {
     uiThread.post(new Runnable() {
@@ -666,7 +662,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       }
     });
   }
-  
+
   //@SimpleEvent(description = "Trigger event when value from connected BluetoothLE device is changed. The value"
     //  + " can be byte, Integer, float, or String.")
   public void ValueChanged(final String byteValue, final int intValue, final float floatValue, final String stringValue) {
@@ -677,7 +673,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
       }
     });
   }
-  
+
   @SimpleEvent(description = "Trigger event when byte value from connected BluetoothLE device is changed.")
 public void ByteValueChanged(final String byteValue) {
   uiThread.post(new Runnable() {
@@ -696,7 +692,7 @@ public void IntValueChanged(final int intValue) {
     }
   });
 }
-  
+
   @SimpleEvent(description = "Trigger event when int value from connected BluetoothLE device is changed.")
 public void FloatValueChanged(final float floatValue) {
   uiThread.post(new Runnable() {
@@ -706,8 +702,8 @@ public void FloatValueChanged(final float floatValue) {
     }
   });
 }
-  
-  
+
+
   @SimpleEvent(description = "Trigger event when String value from connected BluetoothLE device is changed.")
 public void StringValueChanged(final String stringValue) {
   uiThread.post(new Runnable() {
@@ -717,7 +713,7 @@ public void StringValueChanged(final String stringValue) {
     }
   });
 }
-  
+
   @SimpleEvent(description = "Trigger event when value is successfully written to connected BluetoothLE device.")
   public void ValueWrite() {
     uiThread.post(new Runnable() {
@@ -727,7 +723,7 @@ public void StringValueChanged(final String stringValue) {
       }
     });
   }
-  
+
   @SimpleFunction(description="Return list of supported services for connected device as a String")
   public String GetSupportedServices() {
     if (mGattService == null) return ",";
@@ -740,16 +736,16 @@ public void StringValueChanged(final String stringValue) {
         String unknownServiceString = "Unknown Service";
         String serviceName = BluetoothLEGattAttributes.lookup(serviceUUID, unknownServiceString);
         serviceUUIDList += serviceUUID + " "+ serviceName + ",";
-   
+
     }
     return serviceUUIDList;
 }
-  
+
   @SimpleFunction(description="Return Unique ID of selected service with index. Index specified by list of supported services for a connected device, starting from 0.")
   public String GetServicebyIndex(int index) {
     return mGattService.get(index).getUuid().toString();
   }
-  
+
   @SimpleFunction(description="Return list of supported characteristics for connected device as a String")
   public String GetSupportedCharacteristics() {
     if (mGattService == null) return ",";
@@ -771,13 +767,13 @@ public void StringValueChanged(final String stringValue) {
 
     return charUUIDList;
 }
-  
-  
+
+
   @SimpleFunction(description="Return Unique ID of selected characteristic with index. Index specified by list of supported characteristics for a connected device, starting from 0.")
   public String GetCharacteristicbyIndex(int index) {
     return gattChars.get(index).getUuid().toString();
   }
-  
+
   /**
    * Functions
    */
@@ -794,7 +790,7 @@ public void StringValueChanged(final String stringValue) {
     return deviceList;
   }
 
-  
+
   // add device when scanning
   private void addDevice(BluetoothDevice device, int rssi, byte[] scanRecord) {
     if (!mLeDevices.contains(device)) {
@@ -807,20 +803,20 @@ public void StringValueChanged(final String stringValue) {
     RssiChanged(rssi);
   }
 
-  
+
   // read characteristic based on UUID
   private void readChar(UUID ser_uuid, UUID char_uuid) {
     if (isServiceRead && !mGattService.isEmpty()) {
       for (int i = 0; i < mGattService.size(); i++) {
         if (mGattService.get(i).getUuid().equals(ser_uuid)) {
-          
+
           BluetoothGattDescriptor desc = mGattService.get(i).getCharacteristic(char_uuid)
               .getDescriptor(UUID.fromString(BluetoothLEGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-          
+
           mGattChar = mGattService.get(i).getCharacteristic(char_uuid);
-          
+
           if (desc != null) {
-            if ((mGattService.get(i).getCharacteristic(char_uuid).getProperties() & 
+            if ((mGattService.get(i).getCharacteristic(char_uuid).getProperties() &
                BluetoothGattCharacteristic.PROPERTY_INDICATE) != 0) {
               desc.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
             } else {
@@ -837,7 +833,7 @@ public void StringValueChanged(final String stringValue) {
         }
       }
     }
-    
+
     if(isCharRead == true) {
       LogMessage("Read Character Successfully.", "i");
     } else {
@@ -845,7 +841,7 @@ public void StringValueChanged(final String stringValue) {
     }
   }
 
-  
+
   // Write characteristic based on uuid
   private void writeChar(UUID ser_uuid, UUID char_uuid, int value, int format, int offset) {
     if (isServiceRead && !mGattService.isEmpty()) {
@@ -860,7 +856,7 @@ public void StringValueChanged(final String stringValue) {
         }
       }
     }
-    
+
     if(isCharWrite == true) {
       LogMessage("Write Gatt Characteristic Successfully", "i");
     } else {
@@ -881,7 +877,7 @@ public void StringValueChanged(final String stringValue) {
         }
       }
     }
-    
+
     if(isCharWrite == true) {
       LogMessage("Write Gatt Characteristic Successfully", "i");
     } else {
@@ -910,14 +906,14 @@ public void StringValueChanged(final String stringValue) {
   BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-      
+
       if (newState == BluetoothProfile.STATE_CONNECTED) {
         isConnected = true;
         gatt.discoverServices();
         gatt.readRemoteRssi();
         Connected();
       }
-      
+
       if (newState == BluetoothProfile.STATE_DISCONNECTED) {
         isConnected = false;
       }
@@ -928,7 +924,7 @@ public void StringValueChanged(final String stringValue) {
     // New services discovered
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
       if (status == BluetoothGatt.GATT_SUCCESS) {
-      
+
         mGattService = (ArrayList<BluetoothGattService>) gatt.getServices();
         isServiceRead = true;
       }
@@ -937,7 +933,7 @@ public void StringValueChanged(final String stringValue) {
     @Override
     // Result of a characteristic read operation
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-      
+
       if (status == BluetoothGatt.GATT_SUCCESS) {
 
           data = characteristic.getValue();
@@ -959,12 +955,12 @@ public void StringValueChanged(final String stringValue) {
     @Override
     // Result of a characteristic read operation is changed
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-      
- 
+
+
         data = characteristic.getValue();
         LogMessage("dataLength: " + data.length,"i");
         switch (charType) {
-        case 0: 
+        case 0:
           byteValue = "";
           for (byte i : data) {
             byteValue += i;
@@ -972,17 +968,17 @@ public void StringValueChanged(final String stringValue) {
           LogMessage("byteValue: "+ byteValue,"i");
           ByteValueChanged(byteValue);
           break;
-        case 1: 
+        case 1:
           intValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, intOffset);
           LogMessage("intValue: " + intValue,"i");
           IntValueChanged(intValue);
           break;
-        case 2:   
+        case 2:
           stringValue = characteristic.getStringValue(strOffset);
           LogMessage("stringValue: "+ stringValue,"i");
           StringValueChanged(stringValue);
           break;
-        case 3: 
+        case 3:
           if(data.length==1){
             floatValue = (float)(data[0]*Math.pow(10,0));
           }
@@ -994,7 +990,7 @@ public void StringValueChanged(final String stringValue) {
           }
           LogMessage("floatValue: " + floatValue,"i");
           FloatValueChanged(floatValue);
-       default: 
+       default:
          byteValue = "";
          for (byte i : data) {
            byteValue += i;
@@ -1005,7 +1001,7 @@ public void StringValueChanged(final String stringValue) {
         }
 
         isCharRead = true;
-     
+
     }
 
     @Override
@@ -1044,7 +1040,7 @@ public void StringValueChanged(final String stringValue) {
       return settingsBuilder.build();
   }
 
-  
+
   //TODO: Cristhian - BLE Advertismsent testing
   /**
    * Returns an AdvertiseData object which includes the Service UUID and Device Name.

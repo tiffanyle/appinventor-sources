@@ -33,6 +33,7 @@ class LegoPaletteHelper extends OrderedPaletteHelper {
     legoComponentNames.add("Ev3GyroSensor");
     legoComponentNames.add("Ev3TouchSensor");
     legoComponentNames.add("Ev3UltrasonicSensor");
+    legoComponentNames.add("Ev3Sound");
     legoComponentNames.add("Ev3UI");
     legoComponentNames.add("Ev3Commands");
   }

@@ -126,7 +126,7 @@ public class ComponentImportWizard extends Wizard {
           String url = urlTextBox.getText();
 
           if (url.trim().isEmpty()) {
-            showAlert(MESSAGES.noUrlError());
+            Window.alert(MESSAGES.noUrlError());
             return;
           }
 
@@ -215,8 +215,4 @@ public class ComponentImportWizard extends Wizard {
     return upload;
   }
 
-  private void showAlert(String message) {
-    Window.alert(message);
-    center();
-  }
 }

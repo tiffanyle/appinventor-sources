@@ -162,6 +162,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.ev3UltrasonicSensorComponentPallette();
     } else if (key.equals("Ev3Commands")) {
       value = MESSAGES.ev3CommandsComponentPallette();
+    } else if (key.equals("Ev3Sound")) {
+      value = MESSAGES.ev3SoundComponentPallette();
     } else if (key.equals("Ev3UI")) {
       value = MESSAGES.ev3UIComponentPallette();
       // Other stuff
@@ -289,6 +291,8 @@ public class TranslationDesignerPallete {
       value = MESSAGES.Ev3UltrasonicSensorHelpStringComponentPallette();
     } else if (key.equals("Ev3Commands-helpString")) {
       value = MESSAGES.Ev3CommandsHelpStringComponentPallette();
+    } else if (key.equals("Ev3Sound-helpString")) {
+      value = MESSAGES.Ev3SoundHelpStringComponentPallette();
     } else if (key.equals("Ev3UI-helpString")) {
       value = MESSAGES.Ev3UIHelpStringComponentPallette();
     } else if (key.equals("OrientationSensor-helpString")) {

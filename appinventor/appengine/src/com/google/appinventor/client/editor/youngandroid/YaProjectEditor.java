@@ -83,7 +83,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   // Database of component type descriptions
   private final SimpleComponentDatabase COMPONENT_DATABASE;
-  
+
   // State variables to help determine whether we are ready to show Screen1  
   // Automatically select the Screen1 form editor when we have finished loading
   // both the form and blocks editors for Screen1 and we have added the 
@@ -153,7 +153,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     loadExternalComponents();
     callLoadProject();
   }
-  
+
   // Note: When we add the blocks editors in the loop below we do not actually
   // have them load the blocks file. Instead we trigger the load of a blocks file
   // in the callback for the loading of its associated forms file. This is important
@@ -425,6 +425,10 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     return externalComponentsLoaded;
   }
 
+  private boolean readyToLoadProject() {
+    return externalComponentsLoaded;
+  }
+
   private void addBlocksEditor(YoungAndroidBlocksNode blocksNode) {
     final YaBlocksEditor newBlocksEditor = new YaBlocksEditor(this, blocksNode);
     final String formName = blocksNode.getFormName();
@@ -534,7 +538,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       }
     });
   }
-  
+
   private void loadExternalComponents() {
     //Get the list of all ComponentNodes to be Added
     List<ProjectNode> componentNodes = new ArrayList<ProjectNode>();
@@ -557,7 +561,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
             externalComponentsLoaded = true;
           }
         }
-      }); 
+      });
     }
     if (componentCount == 0) {
       externalComponentsLoaded = true; // to hint that we are ready to load
@@ -569,7 +573,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     COMPONENT_DATABASE.resetDatabase();
     externalComponents.clear();
   }
-  
+
   private static boolean isScreen1(String formName) {
     return formName.equals(YoungAndroidSourceNode.SCREEN1_FORM_NAME);
   }

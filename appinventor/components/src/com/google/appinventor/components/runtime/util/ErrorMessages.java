@@ -198,7 +198,15 @@ public final class ErrorMessages {
   // Image errors
   public static final int ERROR_IMAGE_CANNOT_ROTATE = 3001;
 
-  // Start the next group of errors at 3100
+  // LegoMindstormsEv3 errors
+  public static final int ERROR_EV3_BLUETOOTH_NOT_SET = 3100;
+  public static final int ERROR_EV3_NOT_CONNECTED_TO_ROBOT = 3101;
+  public static final int ERROR_EV3_INVALID_REPLY = 3102;
+  public static final int ERROR_EV3_ILLEGAL_ARGUMENT = 3103;
+  public static final int ERROR_EV3_ILLEGAL_MOTOR_PORT = 3104;
+  public static final int ERROR_EV3_ILLEGAL_SENSOR_PORT = 3105;
+
+  // Start the next group of errors at 3200
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;

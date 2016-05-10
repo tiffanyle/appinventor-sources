@@ -1635,10 +1635,18 @@ public interface OdeMessages extends Messages {
   @Description("Caption for file upload wizard.")
   String fileUploadWizardCaption();
 
+  @DefaultMessage("Error: Malformed Filename")
+  @Description("Error message when file name contains characters that would require URL encoding.")
+  String malformedFilenameTitle();
+
   @DefaultMessage("File names can contain only unaccented letters, numbers, and the characters " +
       "\"-\", \"_\", \".\", \"!\", \"~\", \"*\", \"(\", and \")\"")
   @Description("Error message when file name contains characters that would require URL encoding.")
   String malformedFilename();
+
+  @DefaultMessage("Error: Bad Filename Size")
+  @Description("Error message when filenames are 0 or 101+ characters long")
+  String filenameBadSizeTitle();
 
   @DefaultMessage("File names must be between 1 and 100 characters.")
   @Description("Error message when filenames are 0 or 101+ characters long")
@@ -1656,9 +1664,26 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a file couldn't be uploaded because of its size.")
   String fileTooLargeError();
 
+  @DefaultMessage("Error: No File Selected")
+  @Description("Error message reported when a file was not selected.")
+  String noFileSelectedTitle();
+
   @DefaultMessage("Please select a file to upload.")
   @Description("Error message reported when a file was not selected.")
   String noFileSelected();
+
+  @DefaultMessage("Error: Cannot upload .aia file as media asset")
+  @Description("Error message when user tries to upload aia file as media asset")
+  String aiaMediaAssetTitle();
+
+  @DefaultMessage("To use this file, click Projects > Import project (.aia) from" +
+    " my computer ...")
+  @Description("Error message when user tries to upload aia file as media asset")
+  String aiaMediaAsset();
+
+  @DefaultMessage("http://appinventor.mit.edu/explore/ai2/share.html")
+  @Description("URL for more info on using aia files properly")
+  String aiaMediaAssetHelp();
 
   @DefaultMessage("Request to save {1}" +
       "\n\nA file named {0} already exists in this project." +
@@ -3128,6 +3153,14 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ElapsedTimeProperties();
 
+  @DefaultMessage("SimpleSteps")
+  @Description("")
+  String SimpleStepsProperties();
+
+  @DefaultMessage("WalkSteps")
+  @Description("")
+  String WalkStepsProperties();
+
   @DefaultMessage("Moving")
   @Description("")
   String MovingProperties();
@@ -4077,6 +4110,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String fillParams();
 
+  @DefaultMessage("frequency")
+  @Description("")
+  String frequencyParams();
+
   @DefaultMessage("height")
   @Description("")
   String heightParams();
@@ -4104,6 +4141,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("useBrake")
   @Description("")
   String useBrakeParams();
+
+  @DefaultMessage("volume")
+  @Description("")
+  String volumeParams();
 
   @DefaultMessage("width")
   @Description("")
@@ -5119,6 +5160,18 @@ public interface OdeMessages extends Messages {
   @Description("")
   String StoreValueMethods();
 
+  @DefaultMessage("AppendValue")
+  @Description("")
+  String AppendValueMethods();
+
+  @DefaultMessage("RemoveFirst")
+  @Description("")
+  String RemoveFirstMethods();
+
+  @DefaultMessage("FirstRemoved")
+  @Description("")
+  String FirstRemovedEvents();
+
   @DefaultMessage("InitializeValue")
   @Description("")
   String InitializeValueMethods();
@@ -5423,6 +5476,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RotateSyncIndefinitelyMethods();
 
+  @DefaultMessage("RotateSyncInDistance")
+  @Description("")
+  String RotateSyncInDistanceMethods();
+
   @DefaultMessage("RotateSyncInDuration")
   @Description("")
   String RotateSyncInDurationMethods();
@@ -5482,6 +5539,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("SetPower")
   @Description("")
   String SetPowerMethods();
+
+  @DefaultMessage("StopSound")
+  @Description("")
+  String StopSoundMethods();
 
   //Mock Components
   @DefaultMessage("add items...")
@@ -5588,6 +5649,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String Ev3UIHelpStringComponentPallette();
 
+  @DefaultMessage("A component that provides a high-level interface to sound functionalities on LEGO MINDSTORMS EV3 robot.")
+  @Description("")
+  String Ev3SoundHelpStringComponentPallette();
+
   @DefaultMessage("Non-visible component for storing and retrieving files. Use this component to write or read files on your device. The default behaviour is to write files to the private data directory associated with your App. The Companion is special cased to write files to /sdcard/AppInventor/data to facilitate debugging. If the file path starts with a slash (/), then the file is created relative to /sdcard. For example writing a file to /myFile.txt will write the file in /sdcard/myFile.txt.")
   @Description("")
   String FileHelpStringComponentPallette();
@@ -5636,7 +5701,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ListViewHelpStringComponentPallette();
 
-  @DefaultMessage("Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), and address.  This can also perform \"geocoding\", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>\n<p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through wireless networks or GPS satellites (if outdoors).</p>\nLocation information might not be immediately available when an app starts.  You\"ll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event")
+  @DefaultMessage("Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), speed (if supported by the device), and address.  This can also perform \"geocoding\", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>\n <p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through wireless networks or GPS satellites (if outdoors).</p>\nLocation information might not be immediately available when an app starts.  You''ll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event")
   @Description("")
   String LocationSensorHelpStringComponentPallette();
 
@@ -5684,7 +5749,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String PasswordTextBoxHelpStringComponentPallette();
 
-  @DefaultMessage("Component that can count steps.")
+  @DefaultMessage("A Component that acts like a Pedometer. It senses motion via the " +
+    "Accerleromter and attempts to determine if a step has been " +
+    "taken. Using a configurable stride length, it can estimate the " +
+    "distance traveled as well. ")
   @Description("")
   String PedometerHelpStringComponentPallette();
 
@@ -6302,7 +6370,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("GetSupportedCharacteristics")
   @Description("")
   String GetSupportedCharacteristicsMethods();
-  
+
   @DefaultMessage("GetCharacteristicbyIndex")
   @Description("")
   String GetCharacteristicbyIndexMethods();
@@ -6334,32 +6402,37 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ByteValueRead")
   @Description("")
   String ByteValueReadEvents();
-  
+
   @DefaultMessage("IntValueRead")
   @Description("")
   String IntValueReadEvents();
-  
+
   @DefaultMessage("StringValueRead")
   @Description("")
   String StringValueReadEvents();
-  
+
   @DefaultMessage("ByteValueChanged")
   @Description("")
   String ByteValueChangedEvents();
-  
+
   @DefaultMessage("IntValueChanged")
   @Description("")
   String IntValueChangedEvents();
-  
+
   @DefaultMessage("StringValueChanged")
   @Description("")
   String StringValueChangedEvents();
-  
+
   @DefaultMessage("FloatValueChanged")
   @Description("")
   String FloatValueChangedEvents();
-  
+
   @DefaultMessage("FloatValueRead")
   @Description("")
   String FloatValueReadEvents();
+
+  @DefaultMessage("You are in Read Only Mode")
+  @Description("")
+  String readOnlyMode();
+
 }

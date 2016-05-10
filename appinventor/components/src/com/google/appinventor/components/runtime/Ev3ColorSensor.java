@@ -1,6 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2012 MIT, All rights reserved
-//Copyright 2012-2016 MIT, All rights reserved
+// Copyright 2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -17,7 +16,6 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-
 import android.os.Handler;
 
 /**
@@ -68,7 +66,6 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
     super(container, "Ev3ColorSensor");
 
     eventHandler = new Handler();
-
     sensorValueChecker = new Runnable() {
       public void run() {
         String functionName = "";
@@ -327,7 +324,7 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
                                     SENSOR_TYPE,
                                     mode);
 
-    // map values according to LEGO's convension
+    // map values according to LEGO's convention
     if (mode == SENSOR_MODE_COLOR) {
       switch (level) {
       case 0:

@@ -605,39 +605,44 @@
                         </a>
                       </li>
                       <li>
-                          <a href="#Ev3Motors">
-                              Ev3Motors
-                          </a>
+                        <a href="#Ev3Motors">
+                            Ev3Motors
+                        </a>
                       </li>
                       <li>
-                          <a href="#Ev3ColorSensor">
-                              Ev3ColorSensor
-                          </a>
+                        <a href="#Ev3ColorSensor">
+                            Ev3ColorSensor
+                        </a>
                       </li>
                       <li>
-                          <a href="#Ev3GyroSensor">
-                              Ev3GyroSensor
-                          </a>
+                        <a href="#Ev3GyroSensor">
+                            Ev3GyroSensor
+                        </a>
                       </li>
                       <li>
-                          <a href="#Ev3TouchSensor">
-                              Ev3TouchSensor
-                          </a>
+                        <a href="#Ev3TouchSensor">
+                            Ev3TouchSensor
+                        </a>
                       </li>
                       <li>
-                          <a href="#Ev3UltrasonicSensor">
-                              Ev3UltrasonicSensor
-                          </a>
+                        <a href="#Ev3UltrasonicSensor">
+                            Ev3UltrasonicSensor
+                        </a>
                       </li>
                       <li>
-                          <a href="#Ev3UI">
-                              Ev3UI
-                          </a>
+                        <a href="#Ev3Sound">
+                            Ev3Sound
+                        </a>
                       </li>
                       <li>
-                          <a href="#Ev3Commands">
-                              Ev3Commands
-                          </a>
+                        <a href="#Ev3UI">
+                            Ev3UI
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Ev3Commands">
+                            Ev3Commands
+                        </a>
                       </li>
                     </ul>
                     <h2 id="NxtDirectCommands">
@@ -1816,6 +1821,15 @@
                       </dd>
                       <dt>
                         <code>
+                          RotateSyncInDistance
+                        </code>
+                        (number power, number distance, number turnRatio, boolean useBrake)
+                      </dt>
+                      <dd>
+                          Rotate the motors at the same speed for a distance in cm.
+                      </dd>
+                      <dt>
+                        <code>
                           RotateSyncInDuration
                         </code>
                         (number power, number milliseconds, number turnRatio, boolean useBrake)
@@ -2286,12 +2300,12 @@
                         Measure the distance in inches.
                       </dd>
                     </dl>
-                    <h2 id="Ev3UI">
-                      Ev3UI
+                    <h2 id="Ev3Sound">
+                      Ev3Sound
                     </h2>
                     <img alt="" src="images/legoMindstormsEv3.png" />
                     <p>
-                      A component that provides a high-level interface to a LEGO MINDSTORMS EV3 robot, with functions to draw graphs on EV3 screen.
+                      A component that provides a high-level interface to a LEGO MINDSTORMS EV3 robot, which provides sound functionalities.
                     </p>
                     <h3>
                       Properties
@@ -2316,58 +2330,105 @@
                     <dl>
                       <dt>
                         <code>
+                          PlayTone
+                        </code>
+                        (number volume, number frequency, number milliseconds)
+                      </dt>
+                      <dd>
+                        Make the robot play a tone.
+                      </dd>
+                      <dt>
+                        <code>
+                          StopSound
+                        </code>
+                        ()
+                      </dt>
+                      <dd>
+                        Stop any sound on the robot.
+                      </dd>
+                    </dl>
+                    <h2 id="Ev3UI">
+                        Ev3UI
+                    </h2>
+                    <img alt="" src="images/legoMindstormsEv3.png" />
+                    <p>
+                        A component that provides a high-level interface to a LEGO MINDSTORMS EV3 robot, with functions to draw graphs on EV3 screen.
+                    </p>
+                    <h3>
+                        Properties
+                    </h3>
+                    <dl>
+                        <dt>
+                            <code>
+                          BluetoothClient
+                            </code>
+                        </dt>
+                        <dd>
+                            The BluetoothClient component that should be used for communication.
+                            <b>
+                                Must be
+                                set in the Designer
+                            </b>
+                        </dd>
+                    </dl>
+                    <h3>
+                        Methods
+                    </h3>
+                    <dl>
+                        <dt>
+                            <code>
                           DrawPoint
-                        </code>
-                        (number color, number x, number y)
-                      </dt>
-                      <dd>
-                        Draw a point on the screen.
-                      </dd>
-                      <dt>
-                        <code>
+                            </code>
+                            (number color, number x, number y)
+                        </dt>
+                        <dd>
+                            Draw a point on the screen.
+                        </dd>
+                        <dt>
+                            <code>
                           DrawIcon
-                        </code>
-                        (number color, number x, number y, number type, number no)
-                      </dt>
-                      <dd>
-                        Draw a built-in icon on screen.
-                      </dd>
-                      <dt>
-                        <code>
+                            </code>
+                            (number color, number x, number y, number type, number no)
+                        </dt>
+                        <dd>
+                            Draw a built-in icon on screen.
+                        </dd>
+                        <dt>
+                            <code>
                           DrawLine
-                        </code>
-                        (number color, number x1, number y1, number x2, number y2)
-                      </dt>
-                      <dd>
-                        Draw a line on the screen.
-                      </dd>
-                      <dt>
-                        <code>
+                            </code>
+                            (number color, number x1, number y1, number x2, number y2)
+                        </dt>
+                        <dd>
+                            Draw a line on the screen.
+                        </dd>
+                        <dt>
+                            <code>
                           DrawRect
-                        </code>
-                        (number color, number x, number y, number width, number height, boolean fill)
-                      </dt>
-                      <dd>
-                        Draw a rectangle on the screen.
-                      </dd>
-                      <dt>
-                        <code>
+                            </code>
+                            (number color, number x, number y, number width, number height, boolean fill)
+                        </dt>
+                        <dd>
+                            Draw a rectangle on the screen.
+                        </dd>
+                        <dt>
+                            <code>
                           DrawCircle
-                        </code>
-                        (number color, number x, number y, number radius, boolean fill)
-                      </dt>
-                      <dd>
-                        Draw a circle on the screen.
-                      </dd>
-                      <dt>
-                        <code>
+                            </code>
+                            (number color, number x, number y, number radius, boolean fill)
+                        </dt>
+                        <dd>
+                            Draw a circle on the screen.
+                        </dd>
+                        <dt>
+                            <code>
                           FillScreen
-                        </code>
-                        (number color)
-                      </dt>
-                      <dd>
-                        Fill the screen with a color.
-                      </dd>
+                            </code>
+                            (number color)
+                        </dt>
+                        <dd>
+                            Fill the screen with a color.
+                        </dd>
                     </dl>
                     <h2 id="Ev3Commands">
                       Ev3Commands
