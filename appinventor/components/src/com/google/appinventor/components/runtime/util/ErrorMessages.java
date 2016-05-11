@@ -63,12 +63,12 @@ public final class ErrorMessages {
   public static final int ERROR_NXT_CANNOT_DETECT_LIGHT = 418;
   public static final int ERROR_NXT_INVALID_GENERATE_COLOR = 419;
   // LegoMindstormsEv3 errors
-  public static final int ERROR_EV3_BLUETOOTH_NOT_SET = 2900;
-  public static final int ERROR_EV3_NOT_CONNECTED_TO_ROBOT = 2901;
-  public static final int ERROR_EV3_INVALID_REPLY = 2902;
-  public static final int ERROR_EV3_ILLEGAL_ARGUMENT = 2903;
-  public static final int ERROR_EV3_ILLEGAL_MOTOR_PORT = 2904;
-  public static final int ERROR_EV3_ILLEGAL_SENSOR_PORT = 2905;
+//  public static final int ERROR_EV3_BLUETOOTH_NOT_SET = 2900;
+//  public static final int ERROR_EV3_NOT_CONNECTED_TO_ROBOT = 2901;
+//  public static final int ERROR_EV3_INVALID_REPLY = 2902;
+//  public static final int ERROR_EV3_ILLEGAL_ARGUMENT = 2903;
+//  public static final int ERROR_EV3_ILLEGAL_MOTOR_PORT = 2904;
+//  public static final int ERROR_EV3_ILLEGAL_SENSOR_PORT = 2905;
   // Bluetooth errors
   public static final int ERROR_BLUETOOTH_NOT_AVAILABLE = 501;
   public static final int ERROR_BLUETOOTH_NOT_ENABLED = 502;

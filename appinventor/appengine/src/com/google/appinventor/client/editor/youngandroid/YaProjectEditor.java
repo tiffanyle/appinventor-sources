@@ -421,9 +421,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     return screen1FormLoaded && screen1BlocksLoaded && screen1Added;
   }
   
-  private boolean readyToLoadProject() {
-    return externalComponentsLoaded;
-  }
+//  private boolean readyToLoadProject() {
+//    return externalComponentsLoaded;
+ // }
 
   private boolean readyToLoadProject() {
     return externalComponentsLoaded;
