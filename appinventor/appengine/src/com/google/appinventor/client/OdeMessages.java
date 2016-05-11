@@ -6434,5 +6434,13 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("You are in Read Only Mode")
   @Description("")
   String readOnlyMode();
+  
+  @DefaultMessage("WriteFloatValue")
+  @Description("")
+  String WriteFloatValueMethods();
+  
+  @DefaultMessage("WriteByteValue")
+  @Description("")
+  String WriteByteValueMethods();
 
 }

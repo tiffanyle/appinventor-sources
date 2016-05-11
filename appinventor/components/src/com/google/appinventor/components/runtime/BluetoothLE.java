@@ -267,15 +267,44 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(description="Write String value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and String value"
       + "are required.")
   public void WriteStringValue(String service_uuid, String characteristic_uuid, String value) {
+    LogMessage("stringValue: "+ value,"i");
     writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), value);
   }
 
   @SimpleFunction(description="Write Integer value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID, Integer value"
       + " and offset are required. Offset specifies the start position of writing data.")
   public void WriteIntValue(String service_uuid, String characteristic_uuid, int value, int offset) {
+    LogMessage("intValue: "+ value,"i");
     writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), value, BluetoothGattCharacteristic.FORMAT_SINT32, offset);
   }
 
+  @SimpleFunction(description="Write Float value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID, Integer value"
+      + " and offset are required. Offset specifies the start position of writing data.")
+  public void WriteFloatValue(String service_uuid, String characteristic_uuid, float value, int offset) {
+    int exponent = 0;
+    int mantissa = 0;
+    if (Math.abs(value)<1){
+      exponent = (int)(Math.log10(Math.abs(value))-1);
+      mantissa = (int)(value/Math.pow(10, exponent));
+    }else{
+      exponent = (int)Math.log10(Math.abs(value));
+      mantissa = (int)(value*Math.pow(10, exponent));
+      exponent=-1*exponent;
+    }
+    LogMessage("mantissa: "+ mantissa,"i");
+    LogMessage("exponent: "+ exponent,"i");   
+    writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), mantissa, exponent, BluetoothGattCharacteristic.FORMAT_FLOAT, offset);
+  }
+  
+  @SimpleFunction(description="Write byte value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID, Integer value"
+      + " and offset are required. Offset specifies the start position of writing data.")
+  public void WriteByteValue(String service_uuid, String characteristic_uuid, String value) {
+    byte[] bval = value.getBytes();
+    LogMessage("byteValue: "+ bval,"i");
+    writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), bval);
+  }
+  
+  
   @SimpleFunction(description="Read Integer value from a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID and offset"
       + " are required. Offset specifies the start position of reading data.")
   public void ReadIntValue(String service_uuid, String characteristic_uuid, int intOffset) {
@@ -863,6 +892,49 @@ public void StringValueChanged(final String stringValue) {
       LogMessage("Write Gatt Characteristic Fail", "e");
     }
   }
+  
+  private void writeChar(UUID ser_uuid, UUID char_uuid, int mantissa, int exponent, int format, int offset) {
+    if (isServiceRead && !mGattService.isEmpty()) {
+      for (int i = 0; i < mGattService.size(); i++) {
+        if (mGattService.get(i).getUuid().equals(ser_uuid)) {
+          mGattChar = mGattService.get(i).getCharacteristic(char_uuid);
+          if (mGattChar != null) {
+            mGattChar.setValue(mantissa, exponent, format, offset);
+            isCharWrite = currentBluetoothGatt.writeCharacteristic(mGattChar);
+          }
+          break;
+        }
+      }
+    }
+
+    if(isCharWrite == true) {
+      LogMessage("Write Gatt Characteristic Successfully", "i");
+    } else {
+      LogMessage("Write Gatt Characteristic Fail", "e");
+    }
+  }
+  
+  private void writeChar(UUID ser_uuid, UUID char_uuid, byte[] value) {
+    if (isServiceRead && !mGattService.isEmpty()) {
+      for (int i = 0; i < mGattService.size(); i++) {
+        if (mGattService.get(i).getUuid().equals(ser_uuid)) {
+          mGattChar = mGattService.get(i).getCharacteristic(char_uuid);
+          if (mGattChar != null) {
+            mGattChar.setValue(value);
+            isCharWrite = currentBluetoothGatt.writeCharacteristic(mGattChar);
+          }
+          break;
+        }
+      }
+    }
+
+    if(isCharWrite == true) {
+      LogMessage("Write Gatt Characteristic Successfully", "i");
+    } else {
+      LogMessage("Write Gatt Characteristic Fail", "e");
+    }
+  }
+  
 
   private void writeChar(UUID ser_uuid, UUID char_uuid, String value) {
     if (isServiceRead && !mGattService.isEmpty()) {
