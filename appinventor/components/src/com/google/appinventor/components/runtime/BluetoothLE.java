@@ -279,21 +279,14 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
   }
 
   @SimpleFunction(description="Write Float value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID, Integer value"
-      + " and offset are required. Offset specifies the start position of writing data.")
+      + " and offset are required. Offset specifies the start position of writing data. Value converted to IEEE 754 floating-point 32-bit layout before writing.")
   public void WriteFloatValue(String service_uuid, String characteristic_uuid, float value, int offset) {
-    int exponent = 0;
-    int mantissa = 0;
-    if (Math.abs(value)<1){
-      exponent = (int)(Math.log10(Math.abs(value))-1);
-      mantissa = (int)(value/Math.pow(10, exponent));
-    }else{
-      exponent = (int)Math.log10(Math.abs(value));
-      mantissa = (int)(value*Math.pow(10, exponent));
-      exponent=-1*exponent;
-    }
-    LogMessage("mantissa: "+ mantissa,"i");
-    LogMessage("exponent: "+ exponent,"i");   
-    writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), mantissa, exponent, BluetoothGattCharacteristic.FORMAT_FLOAT, offset);
+
+   int floatrep = Float.floatToIntBits(value);
+ 
+    LogMessage("floatrep: " + floatrep, "i");
+
+    writeChar(UUID.fromString(service_uuid), UUID.fromString(characteristic_uuid), floatrep, BluetoothGattCharacteristic.FORMAT_SINT32, offset);
   }
   
   @SimpleFunction(description="Write byte value to a connected BluetoothLE device. Service Unique ID, Characteristic Unique ID, Integer value"
@@ -652,7 +645,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     });
   }
 
-  @SimpleEvent(description = "Trigger event when byte value from connected BluetoothLE device is read.")
+ // @SimpleEvent(description = "Trigger event when byte value from connected BluetoothLE device is read.")
   public void ByteValueRead(final String byteValue) {
     uiThread.post(new Runnable() {
       @Override
@@ -662,7 +655,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     });
   }
 
-  @SimpleEvent(description = "Trigger event when int value from connected BluetoothLE device is read.")
+  //@SimpleEvent(description = "Trigger event when int value from connected BluetoothLE device is read.")
   public void IntValueRead(final int intValue) {
     uiThread.post(new Runnable() {
       @Override
@@ -672,7 +665,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     });
   }
 
-  @SimpleEvent(description = "Trigger event when String value from connected BluetoothLE device is read.")
+  //@SimpleEvent(description = "Trigger event when String value from connected BluetoothLE device is read.")
   public void StringValueRead(final String stringValue) {
     uiThread.post(new Runnable() {
       @Override
@@ -682,7 +675,7 @@ public class BluetoothLE extends AndroidNonvisibleComponent implements Component
     });
   }
 
-  @SimpleEvent(description = "Trigger event when byte value from connected BluetoothLE device is read.")
+  //@SimpleEvent(description = "Trigger event when byte value from connected BluetoothLE device is read.")
   public void FloatValueRead(final float floatValue) {
     uiThread.post(new Runnable() {
       @Override
@@ -893,7 +886,7 @@ public void StringValueChanged(final String stringValue) {
     }
   }
   
-  private void writeChar(UUID ser_uuid, UUID char_uuid, int mantissa, int exponent, int format, int offset) {
+/*  private void writeChar(UUID ser_uuid, UUID char_uuid, int mantissa, int exponent, int format, int offset) {
     if (isServiceRead && !mGattService.isEmpty()) {
       for (int i = 0; i < mGattService.size(); i++) {
         if (mGattService.get(i).getUuid().equals(ser_uuid)) {
@@ -912,7 +905,7 @@ public void StringValueChanged(final String stringValue) {
     } else {
       LogMessage("Write Gatt Characteristic Fail", "e");
     }
-  }
+  }*/
   
   private void writeChar(UUID ser_uuid, UUID char_uuid, byte[] value) {
     if (isServiceRead && !mGattService.isEmpty()) {
